@@ -5,16 +5,18 @@
   const state = {
     topic: null,        // id del tema seleccionado, o null para "mixto"
     topicName: '',
-    current: null,      // pregunta actual (sin respuesta)
+    queue: [],           // preguntas de la sesión, ya barajadas, sin repetir
+    index: -1,            // posición actual dentro de queue
+    current: null,        // queue[index]
     answered: false,
-    correctCount: 0,
-    totalCount: 0
+    correctCount: 0
   };
 
   // ---------- Referencias DOM ----------
   const screens = {
     topics: document.getElementById('screen-topics'),
     quiz: document.getElementById('screen-quiz'),
+    complete: document.getElementById('screen-complete'),
     error: document.getElementById('screen-error')
   };
 
@@ -24,6 +26,8 @@
   const btnRetry = document.getElementById('btn-retry');
   const btnNext = document.getElementById('btn-next');
   const btnReveal = document.getElementById('btn-reveal');
+  const btnRetryTopic = document.getElementById('btn-retry-topic');
+  const btnCompleteChangeTopic = document.getElementById('btn-complete-change-topic');
 
   const scorePill = document.getElementById('score-pill');
   const qTypeTag = document.getElementById('q-type-tag');
@@ -33,6 +37,8 @@
   const openAnswerEl = document.getElementById('open-answer');
   const openTextarea = document.getElementById('open-textarea');
   const feedbackEl = document.getElementById('feedback');
+  const completeScoreEl = document.getElementById('complete-score');
+  const completeTopicEl = document.getElementById('complete-topic');
 
   let topicsCache = [];
 
@@ -52,6 +58,16 @@
   function topicName(id) {
     const t = topicsCache.find(t => t.id === id);
     return t ? t.name : 'Repaso mixto';
+  }
+
+  // Fisher-Yates: baraja una copia del arreglo, no muta el original
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
   // ---------- Carga inicial: temas ----------
@@ -90,39 +106,66 @@
   }
 
   // ---------- Flujo del quiz ----------
-  function startQuiz(topicId) {
+  // Trae TODAS las preguntas del tema (o de todos, en modo mixto) una sola
+  // vez, las baraja, y las recorre sin repetir hasta agotarlas — así el
+  // denominador del progreso es fijo y ninguna pregunta se repite dentro
+  // de la misma sesión.
+  async function startQuiz(topicId) {
     state.topic = topicId;
     state.topicName = topicId ? topicName(topicId) : 'Repaso mixto';
-    state.correctCount = 0;
-    state.totalCount = 0;
-    updateScorePill();
     showScreen('quiz');
-    loadNextQuestion();
-  }
-
-  function updateScorePill() {
-    scorePill.textContent = `${state.correctCount} / ${state.totalCount}`;
-  }
-
-  async function loadNextQuestion() {
-    state.answered = false;
-    feedbackEl.classList.add('hidden');
-    feedbackEl.innerHTML = '';
-    btnNext.classList.add('hidden');
-    openAnswerEl.classList.add('hidden');
-    mcqOptionsEl.classList.add('hidden');
+    qPrompt.textContent = 'Cargando preguntas…';
     mcqOptionsEl.innerHTML = '';
-    openTextarea.value = '';
-    qPrompt.textContent = 'Cargando pregunta…';
+    mcqOptionsEl.classList.add('hidden');
+    openAnswerEl.classList.add('hidden');
+    feedbackEl.classList.add('hidden');
+    btnNext.classList.add('hidden');
 
     try {
-      const qs = state.topic ? `?topic=${encodeURIComponent(state.topic)}` : '';
-      const q = await api(`/questions/random${qs}`);
-      state.current = q;
-      renderQuestion(q);
+      const qs = topicId ? `?topic=${encodeURIComponent(topicId)}` : '';
+      const questions = await api(`/questions${qs}`);
+      if (!questions.length) {
+        showScreen('error');
+        return;
+      }
+      state.queue = shuffle(questions);
+      state.index = -1;
+      state.correctCount = 0;
+      goToNextQuestion();
     } catch (err) {
       showScreen('error');
     }
+  }
+
+  function updateProgress() {
+    const total = state.queue.length;
+    const current = Math.min(state.index + 1, total);
+    scorePill.textContent = `Pregunta ${current} de ${total}`;
+  }
+
+  function goToNextQuestion() {
+    state.index += 1;
+    if (state.index >= state.queue.length) {
+      showCompletion();
+      return;
+    }
+    state.answered = false;
+    state.current = state.queue[state.index];
+    updateProgress();
+    renderQuestion(state.current);
+
+    feedbackEl.classList.add('hidden');
+    feedbackEl.innerHTML = '';
+    btnNext.classList.add('hidden');
+    btnReveal.disabled = false;
+    openTextarea.value = '';
+  }
+
+  function showCompletion() {
+    const total = state.queue.length;
+    completeScoreEl.textContent = `${state.correctCount} de ${total} correctas`;
+    completeTopicEl.textContent = state.topicName;
+    showScreen('complete');
   }
 
   function renderQuestion(q) {
@@ -130,6 +173,7 @@
     qTypeTag.textContent = q.type === 'mcq' ? 'Opción múltiple' : 'Pregunta abierta';
     qTopicTag.textContent = topicName(q.topic);
 
+    mcqOptionsEl.innerHTML = '';
     if (q.type === 'mcq') {
       mcqOptionsEl.classList.remove('hidden');
       openAnswerEl.classList.add('hidden');
@@ -152,7 +196,6 @@
   async function selectOption(optionId, btnEl) {
     if (state.answered) return;
     state.answered = true;
-    state.totalCount += 1;
 
     let result;
     try {
@@ -167,7 +210,6 @@
     }
 
     if (result.correct) state.correctCount += 1;
-    updateScorePill();
 
     // Marca visualmente todas las opciones
     Array.from(mcqOptionsEl.children).forEach(el => {
@@ -194,8 +236,6 @@
   async function revealAnswer() {
     if (state.answered) return;
     state.answered = true;
-    state.totalCount += 1;
-    updateScorePill();
 
     let result;
     try {
@@ -226,11 +266,10 @@
   });
   btnChangeTopic.addEventListener('click', () => showScreen('topics'));
   btnRetry.addEventListener('click', loadTopics);
-  btnNext.addEventListener('click', () => {
-    btnReveal.disabled = false;
-    loadNextQuestion();
-  });
+  btnNext.addEventListener('click', goToNextQuestion);
   btnReveal.addEventListener('click', revealAnswer);
+  btnRetryTopic.addEventListener('click', () => startQuiz(state.topic));
+  btnCompleteChangeTopic.addEventListener('click', () => showScreen('topics'));
 
   // ---------- Arranque ----------
   loadTopics();

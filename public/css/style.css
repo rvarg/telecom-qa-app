@@ -225,6 +225,14 @@ main {
   cursor: pointer;
 }
 
+.btn-ghost--block {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 12px 0;
+  margin-top: 8px;
+}
+
 .score-pill {
   font-family: var(--font-mono);
   font-size: 13px;
@@ -440,6 +448,36 @@ textarea {
 
 .btn-next:active {
   background: #0E6F67;
+}
+
+/* ---------- Fin de sesión ---------- */
+
+.complete-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.complete-box__title {
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--ink);
+}
+
+.complete-box__score {
+  margin: 0 0 4px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+.complete-box__topic {
+  margin: 0 0 22px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
 }
 
 /* ---------- Error ---------- */

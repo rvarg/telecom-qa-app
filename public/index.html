@@ -19,7 +19,7 @@
       <polyline points="0,20 40,20 55,6 70,34 85,6 100,34 115,20 400,20" />
     </svg>
     <div class="hero__content">
-      <p class="hero__eyebrow">Programa Ingenieria en Telecomunicaciones</p>
+      <p class="hero__eyebrow">Programa de Telecomunicaciones, ESPOL</p>
       <h1 class="hero__title">Telecom&nbsp;Q&amp;A</h1>
       <p class="hero__subtitle">Practica y repasa conceptos de fibra óptica, DSP, IoT y fundamentos de comunicaciones.</p>
     </div>
@@ -45,7 +45,7 @@
     <section id="screen-quiz" class="screen hidden">
       <div class="quiz-topbar">
         <button id="btn-change-topic" class="btn-ghost">← Cambiar tema</button>
-        <div class="score-pill" id="score-pill">0 / 0</div>
+        <div class="score-pill" id="score-pill">Pregunta 0 de 0</div>
       </div>
 
       <div class="question-card" id="question-card">
@@ -68,6 +68,17 @@
       </div>
 
       <button id="btn-next" class="btn-primary btn-next hidden">Siguiente pregunta →</button>
+    </section>
+
+    <!-- Pantalla: fin de la sesión -->
+    <section id="screen-complete" class="screen hidden">
+      <div class="complete-box">
+        <p class="complete-box__title">¡Completaste el repaso!</p>
+        <p class="complete-box__score" id="complete-score">0 de 0 correctas</p>
+        <p class="complete-box__topic" id="complete-topic"></p>
+        <button id="btn-retry-topic" class="btn-primary">Repetir este tema</button>
+        <button id="btn-complete-change-topic" class="btn-ghost btn-ghost--block">Cambiar tema</button>
+      </div>
     </section>
 
     <!-- Estado de error de conexión -->
