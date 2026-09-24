@@ -1,0 +1,19 @@
+{
+  "name": "telecom-qa-client",
+  "version": "1.0.0",
+  "description": "Cliente móvil (Capacitor) para el Q&A de telecomunicaciones",
+  "scripts": {
+    "serve": "npx http-server ../public -p 8080",
+    "cap:add:android": "npx cap add android",
+    "cap:sync": "npx cap sync android",
+    "cap:open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/core": "^6.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.0",
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "telecom-qa-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telecom Q&A — despliegue en Vercel (función serverless + sitio estático)",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

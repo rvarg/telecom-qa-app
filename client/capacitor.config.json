@@ -1,0 +1,12 @@
+{
+  "appId": "ec.espol.telecomqa",
+  "appName": "Telecom Q&A",
+  "webDir": "../public",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

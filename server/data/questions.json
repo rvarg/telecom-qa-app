@@ -1,0 +1,253 @@
+{
+  "topics": [
+    { "id": "fibra-optica", "name": "Fibra Óptica y Redes de Acceso (FTTx/GPON)" },
+    { "id": "dsp", "name": "Procesamiento Digital de Señales" },
+    { "id": "iot", "name": "IoT y Tecnologías Emergentes" },
+    { "id": "fundamentos", "name": "Fundamentos de Telecomunicaciones" }
+  ],
+  "questions": [
+    {
+      "id": "q001",
+      "topic": "fibra-optica",
+      "type": "mcq",
+      "prompt": "En una red GPON, ¿qué elemento realiza la distribución óptica pasiva de la señal desde la OLT hacia múltiples ONUs?",
+      "options": [
+        { "id": "a", "text": "Un amplificador óptico EDFA" },
+        { "id": "b", "text": "Un splitter óptico pasivo" },
+        { "id": "c", "text": "Un conmutador Ethernet" },
+        { "id": "d", "text": "Un regenerador 3R" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "El splitter óptico pasivo divide la señal óptica sin requerir alimentación eléctrica, característica central de la arquitectura PON (Passive Optical Network)."
+    },
+    {
+      "id": "q002",
+      "topic": "fibra-optica",
+      "type": "mcq",
+      "prompt": "¿Cuál es la ventana de longitud de onda típicamente usada para el enlace descendente (downstream) en GPON según ITU-T G.984?",
+      "options": [
+        { "id": "a", "text": "850 nm" },
+        { "id": "b", "text": "1310 nm" },
+        { "id": "c", "text": "1490 nm" },
+        { "id": "d", "text": "1625 nm" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "GPON usa 1490 nm para downstream, 1310 nm para upstream y reserva 1550 nm típicamente para overlay de video (RF)."
+    },
+    {
+      "id": "q003",
+      "topic": "fibra-optica",
+      "type": "open",
+      "prompt": "Explica la diferencia entre las arquitecturas de red FTTH punto a punto (P2P) y punto a multipunto (PON), incluyendo una ventaja y una desventaja de cada una.",
+      "referenceAnswer": "En P2P cada usuario tiene una fibra dedicada desde la central hasta el domicilio, lo que da mayor ancho de banda garantizado y facilidad de diagnóstico, pero implica mayor consumo de fibra y puertos activos en la central (mayor costo). En PON, una sola fibra troncal se comparte mediante splitters pasivos entre varios usuarios, reduciendo el uso de fibra y el número de puertos activos (menor costo por usuario), pero el ancho de banda se comparte entre los usuarios de la misma rama y el alcance de diagnóstico es más complejo por la naturaleza pasiva de la red.",
+      "keyPoints": [
+        "P2P: fibra dedicada, mayor ancho de banda garantizado, mayor costo de despliegue",
+        "PON: fibra compartida vía splitter pasivo, menor costo, ancho de banda compartido",
+        "Trade-off costo vs. ancho de banda dedicado"
+      ]
+    },
+    {
+      "id": "q004",
+      "topic": "fibra-optica",
+      "type": "mcq",
+      "prompt": "¿Qué parámetro se ve directamente afectado por el presupuesto óptico (power budget) al diseñar un enlace FTTH?",
+      "options": [
+        { "id": "a", "text": "El número máximo de divisiones y la distancia máxima alcanzable" },
+        { "id": "b", "text": "La frecuencia de reloj del ONT" },
+        { "id": "c", "text": "El protocolo de capa de aplicación usado" },
+        { "id": "d", "text": "El tipo de conector RJ45 usado en el usuario final" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "El power budget (diferencia entre potencia de transmisión y sensibilidad del receptor, menos las pérdidas de inserción) determina cuántas divisiones (splits) y qué distancia soporta el enlace sin regeneración."
+    },
+    {
+      "id": "q005",
+      "topic": "dsp",
+      "type": "mcq",
+      "prompt": "Según el teorema de muestreo de Nyquist-Shannon, ¿cuál debe ser la frecuencia mínima de muestreo para una señal de ancho de banda B sin producir aliasing?",
+      "options": [
+        { "id": "a", "text": "fs = B" },
+        { "id": "b", "text": "fs = 2B" },
+        { "id": "c", "text": "fs = B/2" },
+        { "id": "d", "text": "fs = 4B" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "La frecuencia de muestreo debe ser al menos el doble del ancho de banda de la señal (fs ≥ 2B) para evitar el solapamiento espectral (aliasing)."
+    },
+    {
+      "id": "q006",
+      "topic": "dsp",
+      "type": "open",
+      "prompt": "Un estudiante afirma que aumentar arbitrariamente el orden de un filtro FIR siempre mejora el desempeño de un sistema DSP en tiempo real. ¿Estás de acuerdo? Justifica.",
+      "referenceAnswer": "No necesariamente. Si bien un filtro FIR de mayor orden puede ofrecer una transición más abrupta entre banda de paso y banda de rechazo (mejor selectividad), también incrementa la latencia del sistema (retardo de grupo), el costo computacional (más multiplicaciones-acumulaciones por muestra) y el consumo de memoria y energía, lo cual puede ser inaceptable en aplicaciones de tiempo real con restricciones de latencia o en hardware embebido de recursos limitados. El diseño debe balancear selectividad espectral contra estos costos.",
+      "keyPoints": [
+        "Mayor orden → mejor selectividad espectral pero mayor latencia",
+        "Mayor costo computacional y de memoria",
+        "Relevante en sistemas embebidos/tiempo real con restricciones"
+      ]
+    },
+    {
+      "id": "q007",
+      "topic": "dsp",
+      "type": "mcq",
+      "prompt": "¿Qué transforma la FFT (Fast Fourier Transform) respecto a la DFT (Discrete Fourier Transform) directa?",
+      "options": [
+        { "id": "a", "text": "Cambia el dominio de análisis de frecuencia a tiempo" },
+        { "id": "b", "text": "Reduce la complejidad computacional de O(N²) a O(N log N)" },
+        { "id": "c", "text": "Elimina la necesidad de muestreo" },
+        { "id": "d", "text": "Convierte una señal analógica en digital" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "La FFT es un algoritmo eficiente para calcular la DFT, reduciendo la complejidad de O(N²) a O(N log N) mediante la explotación de simetrías y periodicidades."
+    },
+    {
+      "id": "q008",
+      "topic": "dsp",
+      "type": "mcq",
+      "prompt": "¿Qué efecto produce la cuantización en un conversor A/D sobre la señal digitalizada?",
+      "options": [
+        { "id": "a", "text": "Introduce ruido de cuantización, relacionado con el número de bits" },
+        { "id": "b", "text": "Elimina completamente el ruido térmico" },
+        { "id": "c", "text": "Aumenta el ancho de banda analógico de la señal" },
+        { "id": "d", "text": "No tiene efecto si la frecuencia de muestreo es alta" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "La cuantización aproxima valores continuos a niveles discretos, generando error de cuantización cuya potencia depende del número de bits del conversor (a mayor número de bits, menor ruido de cuantización)."
+    },
+    {
+      "id": "q009",
+      "topic": "iot",
+      "type": "mcq",
+      "prompt": "¿Cuál de las siguientes tecnologías es más adecuada para sensores IoT de bajo consumo y largo alcance (LPWAN)?",
+      "options": [
+        { "id": "a", "text": "Bluetooth Low Energy" },
+        { "id": "b", "text": "LoRaWAN" },
+        { "id": "c", "text": "Wi-Fi 6" },
+        { "id": "d", "text": "USB 3.0" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "LoRaWAN es una tecnología LPWAN diseñada para largo alcance (varios kilómetros) y bajo consumo energético, ideal para sensórica distribuida como calidad de aire o agricultura."
+    },
+    {
+      "id": "q010",
+      "topic": "iot",
+      "type": "open",
+      "prompt": "Describe cómo un proyecto de IoT para monitoreo de calidad de aire urbano (PM2.5, CO2, NO2) puede alinearse con los Objetivos de Desarrollo Sostenible (ODS) de la ONU.",
+      "referenceAnswer": "Un proyecto de este tipo se alinea principalmente con el ODS 11 (Ciudades y Comunidades Sostenibles), al proveer datos para mejorar la calidad del aire urbano y la planificación ambiental, y con el ODS 3 (Salud y Bienestar), al permitir alertar a la población sobre niveles de contaminación que afectan la salud respiratoria. También puede vincularse con el ODS 13 (Acción por el Clima) si los datos alimentan políticas de reducción de emisiones, y con el ODS 9 (Industria, Innovación e Infraestructura) por el desarrollo de infraestructura de sensores y conectividad. La clave es mostrar métricas de impacto cuantificables (personas beneficiadas, reducción de exposición, cobertura geográfica).",
+      "keyPoints": [
+        "ODS 11: ciudades sostenibles",
+        "ODS 3: salud y bienestar",
+        "ODS 13 y ODS 9 como vínculos secundarios",
+        "Importancia de métricas de impacto cuantificables"
+      ]
+    },
+    {
+      "id": "q011",
+      "topic": "iot",
+      "type": "mcq",
+      "prompt": "¿Qué capa del modelo OSI es responsable de asegurar la entrega confiable de datos extremo a extremo mediante mecanismos como retransmisión y control de flujo?",
+      "options": [
+        { "id": "a", "text": "Capa física" },
+        { "id": "b", "text": "Capa de enlace de datos" },
+        { "id": "c", "text": "Capa de transporte" },
+        { "id": "d", "text": "Capa de presentación" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "La capa de transporte (por ejemplo, TCP) implementa control de flujo, retransmisión y confirmación de entrega extremo a extremo entre aplicaciones."
+    },
+    {
+      "id": "q012",
+      "topic": "iot",
+      "type": "mcq",
+      "prompt": "En un microcontrolador ESP32 usado para un nodo IoT, ¿qué ventaja ofrece frente a un microcontrolador básico sin conectividad integrada?",
+      "options": [
+        { "id": "a", "text": "Incluye Wi-Fi y Bluetooth integrados en el mismo chip" },
+        { "id": "b", "text": "No requiere alimentación eléctrica" },
+        { "id": "c", "text": "Elimina la necesidad de programación" },
+        { "id": "d", "text": "Solo funciona con fibra óptica" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "El ESP32 integra radios Wi-Fi y Bluetooth junto con el procesador, lo que simplifica el diseño de nodos IoT conectados sin necesidad de módulos externos adicionales."
+    },
+    {
+      "id": "q013",
+      "topic": "fundamentos",
+      "type": "mcq",
+      "prompt": "¿Qué mide el parámetro relación señal a ruido (SNR) en un sistema de comunicaciones?",
+      "options": [
+        { "id": "a", "text": "La potencia de la señal respecto a la potencia del ruido presente en el canal" },
+        { "id": "b", "text": "La velocidad máxima de transmisión sin importar el canal" },
+        { "id": "c", "text": "El retardo de propagación del canal" },
+        { "id": "d", "text": "El número de usuarios simultáneos en la red" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "SNR compara la potencia de la señal útil con la potencia del ruido en el canal; un SNR más alto generalmente permite mayor capacidad según la fórmula de Shannon."
+    },
+    {
+      "id": "q014",
+      "topic": "fundamentos",
+      "type": "open",
+      "prompt": "Según el teorema de la capacidad de canal de Shannon, ¿qué dos factores determinan la capacidad máxima teórica de un canal de comunicación y cómo se relacionan entre sí?",
+      "referenceAnswer": "La capacidad de Shannon, C = B·log2(1 + SNR), depende del ancho de banda del canal (B) y de la relación señal a ruido (SNR). Ambos factores son intercambiables hasta cierto punto: se puede compensar un menor ancho de banda con una mayor SNR (por ejemplo, aumentando potencia de transmisión o reduciendo ruido) y viceversa, aunque la relación es logarítmica para el SNR y lineal para el ancho de banda, por lo que aumentar el ancho de banda suele ser más efectivo para incrementar la capacidad que aumentar la SNR en la misma proporción.",
+      "keyPoints": [
+        "C = B log2(1+SNR)",
+        "Ancho de banda (B) y SNR como factores",
+        "Relación logarítmica en SNR, lineal en B"
+      ]
+    },
+    {
+      "id": "q015",
+      "topic": "fundamentos",
+      "type": "mcq",
+      "prompt": "¿Cuál de las siguientes técnicas de modulación es de tipo digital?",
+      "options": [
+        { "id": "a", "text": "AM (Amplitude Modulation)" },
+        { "id": "b", "text": "FM (Frequency Modulation)" },
+        { "id": "c", "text": "QPSK (Quadrature Phase Shift Keying)" },
+        { "id": "d", "text": "PM analógica" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "QPSK codifica símbolos digitales mediante cuatro fases posibles de la portadora, a diferencia de AM/FM/PM que son técnicas de modulación analógica clásicas."
+    },
+    {
+      "id": "q016",
+      "topic": "fundamentos",
+      "type": "mcq",
+      "prompt": "En el contexto regulatorio ecuatoriano, ¿qué entidad es responsable de la administración del espectro radioeléctrico?",
+      "options": [
+        { "id": "a", "text": "ARCOTEL (Agencia de Regulación y Control de las Telecomunicaciones)" },
+        { "id": "b", "text": "SENESCYT" },
+        { "id": "c", "text": "Ministerio de Salud Pública" },
+        { "id": "d", "text": "Banco Central del Ecuador" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "ARCOTEL es el organismo técnico encargado de administrar, regular y controlar el uso del espectro radioeléctrico y los servicios de telecomunicaciones en Ecuador."
+    },
+    {
+      "id": "q017",
+      "topic": "fundamentos",
+      "type": "open",
+      "prompt": "Explica por qué la multiplexación por división de frecuencia (FDM) y la multiplexación por división de tiempo (TDM) son ambas formas de compartir un mismo medio de transmisión, señalando su diferencia principal.",
+      "referenceAnswer": "Ambas técnicas permiten que múltiples señales compartan un único medio físico de transmisión, pero lo hacen dividiendo un recurso distinto: FDM asigna a cada señal una banda de frecuencia exclusiva dentro del ancho de banda total del canal, transmitiendo todas las señales simultáneamente en el tiempo pero separadas en frecuencia; TDM, en cambio, asigna a cada señal intervalos de tiempo (time slots) exclusivos dentro de un mismo canal de frecuencia, transmitiendo las señales de forma secuencial pero compartiendo todo el ancho de banda disponible en cada instante que le corresponde a cada usuario.",
+      "keyPoints": [
+        "FDM: división en frecuencia, transmisión simultánea",
+        "TDM: división en tiempo, transmisión secuencial por slots",
+        "Ambas comparten el mismo medio físico"
+      ]
+    },
+    {
+      "id": "q018",
+      "topic": "fibra-optica",
+      "type": "mcq",
+      "prompt": "¿Qué tipo de fibra óptica es la más utilizada en despliegues FTTH de larga distancia por su bajo coeficiente de dispersión y atenuación?",
+      "options": [
+        { "id": "a", "text": "Fibra multimodo de índice escalonado" },
+        { "id": "b", "text": "Fibra monomodo (SMF, single-mode fiber)" },
+        { "id": "c", "text": "Fibra plástica (POF)" },
+        { "id": "d", "text": "Cable coaxial" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "La fibra monomodo (SMF) tiene un núcleo muy pequeño que permite un único modo de propagación, minimizando la dispersión modal y logrando bajas pérdidas en distancias largas, por lo que es el estándar en redes FTTH y troncales."
+    }
+  ]
+}

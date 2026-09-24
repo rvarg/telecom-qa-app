@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Telecom Q&A</title>
+<meta name="theme-color" content="#0B2A4A" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Encabezado -->
+  <header class="hero">
+    <svg class="hero__signal" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,20 40,20 55,6 70,34 85,6 100,34 115,20 400,20" />
+    </svg>
+    <div class="hero__content">
+      <p class="hero__eyebrow">Programa de Telecomunicaciones, ESPOL</p>
+      <h1 class="hero__title">Telecom&nbsp;Q&amp;A</h1>
+      <p class="hero__subtitle">Practica y repasa conceptos de fibra óptica, DSP, IoT y fundamentos de comunicaciones.</p>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- Pantalla: selección de tema -->
+    <section id="screen-topics" class="screen">
+      <p class="section-label">Elige un tema para empezar</p>
+      <div id="topic-list" class="topic-list" role="list"></div>
+
+      <div class="mixed-card" id="mixed-topics-btn" role="button" tabindex="0">
+        <div>
+          <p class="mixed-card__title">Repaso mixto</p>
+          <p class="mixed-card__desc">Preguntas de todos los temas, en orden aleatorio.</p>
+        </div>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </section>
+
+    <!-- Pantalla: pregunta -->
+    <section id="screen-quiz" class="screen hidden">
+      <div class="quiz-topbar">
+        <button id="btn-change-topic" class="btn-ghost">← Cambiar tema</button>
+        <div class="score-pill" id="score-pill">0 / 0</div>
+      </div>
+
+      <div class="question-card" id="question-card">
+        <div class="question-card__meta">
+          <span class="tag" id="q-type-tag">Opción múltiple</span>
+          <span class="tag tag--muted" id="q-topic-tag">Tema</span>
+        </div>
+        <p class="question-card__prompt" id="q-prompt">Cargando pregunta…</p>
+
+        <!-- Opción múltiple -->
+        <div id="mcq-options" class="options-list"></div>
+
+        <!-- Pregunta abierta -->
+        <div id="open-answer" class="open-answer hidden">
+          <textarea id="open-textarea" rows="4" placeholder="Escribe tu respuesta aquí (opcional, es para tu propio análisis)…"></textarea>
+          <button id="btn-reveal" class="btn-primary">Ver respuesta de referencia</button>
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+
+      <button id="btn-next" class="btn-primary btn-next hidden">Siguiente pregunta →</button>
+    </section>
+
+    <!-- Estado de error de conexión -->
+    <section id="screen-error" class="screen hidden">
+      <div class="error-box">
+        <p class="error-box__title">No se pudo conectar con el servidor</p>
+        <p class="error-box__desc">Verifica que el dispositivo esté conectado a la red de la intranet y que la dirección del servidor configurada en <code>config.js</code> sea correcta.</p>
+        <button id="btn-retry" class="btn-primary">Reintentar</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
