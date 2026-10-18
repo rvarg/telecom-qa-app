@@ -1,0 +1,81 @@
+{
+  "title": "Principios de la fibra óptica",
+  "description": "Estructura de la fibra, reflexión interna total y tipos de fibra.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "En el esquema de la sección transversal de una fibra óptica, ¿qué región tiene el mayor índice de refracción?",
+      "image": {
+        "url": "img/fibra-estructura.svg",
+        "alt": "Sección transversal de una fibra óptica con tres regiones concéntricas numeradas del 1 (centro) al 3 (exterior)",
+        "caption": "Sección transversal de una fibra óptica (ilustración propia, sin escala)."
+      },
+      "options": [
+        {
+          "id": "a",
+          "text": "La región 1 (centro)"
+        },
+        {
+          "id": "b",
+          "text": "La región 2 (anillo intermedio)"
+        },
+        {
+          "id": "c",
+          "text": "La región 3 (capa exterior)"
+        },
+        {
+          "id": "d",
+          "text": "Las tres regiones tienen el mismo índice"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "La región 1 es el núcleo (core). Su índice de refracción es mayor que el del revestimiento (región 2), lo que permite la reflexión interna total. La región 3 es el recubrimiento protector."
+    },
+    {
+      "prompt": "¿Qué fenómeno confina la luz dentro del núcleo de la fibra óptica?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Difracción en el revestimiento"
+        },
+        {
+          "id": "b",
+          "text": "Absorción selectiva en el recubrimiento"
+        },
+        {
+          "id": "c",
+          "text": "Reflexión interna total"
+        },
+        {
+          "id": "d",
+          "text": "Efecto Doppler"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "La luz que incide en la frontera núcleo-revestimiento con un ángulo mayor que el crítico se refleja por completo y permanece guiada en el núcleo."
+    },
+    {
+      "prompt": "¿Qué tipo de fibra es la más utilizada en enlaces FTTH y troncales de larga distancia?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Fibra multimodo de índice escalonado"
+        },
+        {
+          "id": "b",
+          "text": "Fibra monomodo (SMF)"
+        },
+        {
+          "id": "c",
+          "text": "Fibra plástica (POF)"
+        },
+        {
+          "id": "d",
+          "text": "Cable coaxial"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "La fibra monomodo tiene un núcleo muy pequeño que admite un único modo de propagación, con baja dispersión y baja atenuación en largas distancias."
+    }
+  ]
+}

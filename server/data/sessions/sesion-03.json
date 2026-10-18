@@ -1,0 +1,76 @@
+{
+  "title": "Muestreo y cuantización",
+  "description": "Del mundo analógico al digital: teorema de Nyquist y conversión A/D.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "Según el teorema de Nyquist-Shannon, ¿cuál es la frecuencia de muestreo mínima para una señal de ancho de banda máximo B sin producir aliasing?",
+      "options": [
+        {
+          "id": "a",
+          "text": "fs = B"
+        },
+        {
+          "id": "b",
+          "text": "fs = 2B"
+        },
+        {
+          "id": "c",
+          "text": "fs = B/2"
+        },
+        {
+          "id": "d",
+          "text": "fs = 4B"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Se necesita muestrear al menos al doble del ancho de banda de la señal (fs ≥ 2B) para poder reconstruirla sin solapamiento espectral."
+    },
+    {
+      "prompt": "¿Qué fenómeno ocurre cuando una señal se muestrea a una frecuencia menor que la de Nyquist?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Aliasing (solapamiento espectral)"
+        },
+        {
+          "id": "b",
+          "text": "Saturación del conversor"
+        },
+        {
+          "id": "c",
+          "text": "Ruido de cuantización nulo"
+        },
+        {
+          "id": "d",
+          "text": "Aumento de la resolución en frecuencia"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Las componentes de alta frecuencia se «pliegan» y aparecen como frecuencias más bajas que no existían en la señal original."
+    },
+    {
+      "prompt": "¿Qué efecto produce la cuantización en un conversor A/D?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Elimina el ruido térmico del canal"
+        },
+        {
+          "id": "b",
+          "text": "Aumenta el ancho de banda de la señal"
+        },
+        {
+          "id": "c",
+          "text": "Introduce ruido de cuantización, que disminuye al aumentar el número de bits"
+        },
+        {
+          "id": "d",
+          "text": "No tiene efecto si la frecuencia de muestreo es alta"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "La cuantización aproxima valores continuos a niveles discretos; el error resultante es menor cuanto más bits tenga el conversor."
+    }
+  ]
+}

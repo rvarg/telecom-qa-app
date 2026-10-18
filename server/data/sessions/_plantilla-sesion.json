@@ -1,0 +1,45 @@
+{
+  "_ayuda": [
+    "PLANTILLA. Este archivo NO se carga en la app (su nombre no sigue el patrón sesion-NN.json).",
+    "Para crear o reemplazar una sesión: copia este archivo como sesion-NN.json (NN = 01 ... 10) y edítalo.",
+    "Máximo 10 sesiones y 10 preguntas por sesión; solo opción múltiple.",
+    "Campos opcionales: description, shuffleQuestions (true/false, por defecto true), id de pregunta, image, explanation.",
+    "Cada pregunta: 2 a 6 opciones; correctOptionId debe coincidir con el id de una de ellas.",
+    "Imagen: 'url' puede ser un enlace https://... (necesita internet) o una ruta local como 'img/mi-figura.png' (archivo dentro de la carpeta public/img/).",
+    "Después de editar, revisa los archivos con:  npm run validate"
+  ],
+
+  "title": "Título de la sesión (p. ej. Sesión 3: Tema de la clase)",
+  "description": "Descripción breve que se muestra bajo el título en la lista de sesiones.",
+  "shuffleQuestions": true,
+
+  "questions": [
+    {
+      "prompt": "Enunciado de la pregunta sin imagen.",
+      "options": [
+        { "id": "a", "text": "Primera opción" },
+        { "id": "b", "text": "Segunda opción" },
+        { "id": "c", "text": "Tercera opción" },
+        { "id": "d", "text": "Cuarta opción" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Explicación que se muestra después de responder (opcional pero recomendada)."
+    },
+    {
+      "id": "id-opcional-unico-en-la-sesion",
+      "prompt": "Enunciado de una pregunta que incluye una imagen.",
+      "image": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/FTTX.svg?width=600",
+        "alt": "Texto alternativo: describe la imagen para quien no pueda verla",
+        "caption": "Pie de figura opcional, p. ej. la fuente de la imagen."
+      },
+      "options": [
+        { "id": "a", "text": "Opción A" },
+        { "id": "b", "text": "Opción B" },
+        { "id": "c", "text": "Opción C" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Explicación de la respuesta correcta."
+    }
+  ]
+}

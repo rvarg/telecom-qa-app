@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Sección transversal de una fibra óptica con tres regiones concéntricas numeradas">
+  <rect width="480" height="300" rx="14" fill="#FFFFFF"/>
+  <circle cx="240" cy="140" r="120" fill="#E3EAF0" stroke="#9AAAB8" stroke-width="2"/>
+  <circle cx="240" cy="140" r="80" fill="#CFE5E3" stroke="#12897F" stroke-width="2"/>
+  <circle cx="240" cy="140" r="38" fill="#FBEBD8" stroke="#E8963B" stroke-width="2"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="26" fill="#0B2A4A" text-anchor="middle">
+    <text x="240" y="150">1</text>
+    <text x="299" y="149">2</text>
+    <text x="340" y="149">3</text>
+  </g>
+  <text x="240" y="287" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#5B6B78" text-anchor="middle">Sección transversal (sin escala)</text>
+</svg>

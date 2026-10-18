@@ -57,21 +57,23 @@ Si el sistema operativo tiene firewall activo, habilita el puerto 3000
 para conexiones entrantes desde la red local (por ejemplo, en Windows:
 Firewall de Windows Defender → Regla de entrada → puerto TCP 3000).
 
-## 5. Editar el banco de preguntas
+## 5. Editar las sesiones
 
-Las preguntas están en `data/questions.json`. Cada pregunta tiene:
+El contenido vive en `data/sessions/`, un archivo por sesión
+(`sesion-01.json` ... `sesion-10.json`; máximo 10 sesiones y 10 preguntas
+de opción múltiple por sesión). El formato completo, con ejemplos de
+imágenes, está en [`data/README.md`](data/README.md), y hay una plantilla
+lista para copiar en `data/sessions/_plantilla-sesion.json`. Los textos
+del encabezado de la app se cambian en `data/app.json`.
 
-- `type`: `"mcq"` (opción múltiple) u `"open"` (pregunta abierta)
-- `topic`: debe coincidir con un `id` listado en `topics` al inicio del archivo
-- Para `mcq`: `options` (lista de `{id, text}`), `correctOptionId`, `explanation`
-- Para `open`: `referenceAnswer` y opcionalmente `keyPoints` (lista de puntos clave)
+Después de editar, revisa los archivos:
 
-Si prefieres mantener las preguntas en Excel, arma una hoja con esas mismas
-columnas y luego expórtala a este formato JSON (puedo ayudarte a generar
-un script de conversión si lo necesitas).
+```bash
+npm run validate
+```
 
-Después de editar el archivo, reinicia el proceso (`Ctrl+C` y `npm start`
-de nuevo), o llama a `POST /api/admin/reload` para recargarlo sin reiniciar:
+y recarga el contenido: reinicia el proceso (`Ctrl+C` y `npm start` de
+nuevo), o llama a `POST /api/admin/reload` para recargarlo sin reiniciar:
 
 ```bash
 curl -X POST http://localhost:3000/api/admin/reload
@@ -93,9 +95,9 @@ pm2 startup   # sigue las instrucciones que imprime para autoarranque
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | `/api/health` | Estado del servidor |
-| GET | `/api/topics` | Lista de temas con conteo de preguntas |
-| GET | `/api/questions?topic=&type=` | Lista de preguntas (sin revelar respuesta) |
-| GET | `/api/questions/random?topic=&type=` | Una pregunta aleatoria |
-| POST | `/api/questions/:id/check` | Verifica respuesta y da retroalimentación |
-| POST | `/api/admin/reload` | Recarga `questions.json` sin reiniciar |
+| GET | `/api/health` | Estado del servidor, nº de sesiones y de advertencias de carga |
+| GET | `/api/config` | Textos del encabezado (`data/app.json`) |
+| GET | `/api/sessions` | Lista de sesiones con su número de preguntas |
+| GET | `/api/sessions/:sessionId` | Una sesión con sus preguntas (sin revelar las respuestas) |
+| POST | `/api/sessions/:sessionId/questions/:questionId/check` | Body `{ "optionId": "b" }`; devuelve si es correcta y la explicación |
+| POST | `/api/admin/reload` | Recarga los archivos de `data/` sin reiniciar |

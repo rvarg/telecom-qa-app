@@ -3,50 +3,76 @@
 
   // ---------- Estado ----------
   const state = {
-    topic: null,        // id del tema seleccionado, o null para "mixto"
-    topicName: '',
-    queue: [],           // preguntas de la sesión, ya barajadas, sin repetir
-    index: -1,            // posición actual dentro de queue
-    current: null,        // queue[index]
+    sessions: [],        // lista resumida (id, number, title, description, questionCount)
+    session: null,       // sesión abierta (con sus preguntas, sin respuestas)
+    queue: [],           // preguntas de la sesión en el orden en que se mostrarán
+    index: -1,           // posición actual dentro de queue
+    current: null,       // queue[index]
     answered: false,
-    correctCount: 0
+    correctCount: 0,
+    token: 0             // cambia al abrir/cerrar una sesión: descarta respuestas de red tardías
   };
 
   // ---------- Referencias DOM ----------
+  const $ = id => document.getElementById(id);
+
   const screens = {
-    topics: document.getElementById('screen-topics'),
-    quiz: document.getElementById('screen-quiz'),
-    complete: document.getElementById('screen-complete'),
-    error: document.getElementById('screen-error')
+    sessions: $('screen-sessions'),
+    quiz: $('screen-quiz'),
+    complete: $('screen-complete'),
+    error: $('screen-error')
   };
 
-  const topicListEl = document.getElementById('topic-list');
-  const mixedBtn = document.getElementById('mixed-topics-btn');
-  const btnChangeTopic = document.getElementById('btn-change-topic');
-  const btnRetry = document.getElementById('btn-retry');
-  const btnNext = document.getElementById('btn-next');
-  const btnReveal = document.getElementById('btn-reveal');
-  const btnRetryTopic = document.getElementById('btn-retry-topic');
-  const btnCompleteChangeTopic = document.getElementById('btn-complete-change-topic');
+  const el = {
+    heroEyebrow: $('hero-eyebrow'),
+    heroTitle: $('hero-title'),
+    heroSubtitle: $('hero-subtitle'),
+    sessionsLabel: $('sessions-label'),
+    sessionList: $('session-list'),
 
-  const scorePill = document.getElementById('score-pill');
-  const qTypeTag = document.getElementById('q-type-tag');
-  const qTopicTag = document.getElementById('q-topic-tag');
-  const qPrompt = document.getElementById('q-prompt');
-  const mcqOptionsEl = document.getElementById('mcq-options');
-  const openAnswerEl = document.getElementById('open-answer');
-  const openTextarea = document.getElementById('open-textarea');
-  const feedbackEl = document.getElementById('feedback');
-  const completeScoreEl = document.getElementById('complete-score');
-  const completeTopicEl = document.getElementById('complete-topic');
+    btnBack: $('btn-back'),
+    progressPill: $('progress-pill'),
+    progressBar: $('progress-bar'),
+    qSessionTag: $('q-session-tag'),
+    qPrompt: $('q-prompt'),
+    figure: $('q-figure'),
+    figureBtn: $('q-figure-btn'),
+    qImage: $('q-image'),
+    qCaption: $('q-caption'),
+    options: $('mcq-options'),
+    feedback: $('feedback'),
+    btnNext: $('btn-next'),
 
-  let topicsCache = [];
+    completeScore: $('complete-score'),
+    completeSession: $('complete-session'),
+    btnNextSession: $('btn-next-session'),
+    btnRepeat: $('btn-repeat'),
+    btnCompleteBack: $('btn-complete-back'),
+
+    errorTitle: $('error-title'),
+    errorDesc: $('error-desc'),
+    btnRetry: $('btn-retry'),
+
+    lightbox: $('lightbox'),
+    lightboxImg: $('lightbox-img')
+  };
+
+  const DEFAULT_ERROR = {
+    title: 'No se pudo cargar el contenido',
+    desc: 'Verifica tu conexión y que la dirección del servidor configurada en config.js sea correcta.'
+  };
 
   // ---------- Utilidades ----------
   function showScreen(name) {
-    Object.entries(screens).forEach(([key, el]) => {
-      el.classList.toggle('hidden', key !== name);
+    Object.entries(screens).forEach(([key, node]) => {
+      node.classList.toggle('hidden', key !== name);
     });
+  }
+
+  function showError(title, desc) {
+    el.errorTitle.textContent = title || DEFAULT_ERROR.title;
+    el.errorDesc.textContent = desc || DEFAULT_ERROR.desc;
+    showScreen('error');
   }
 
   async function api(path, options) {
@@ -55,12 +81,7 @@
     return res.json();
   }
 
-  function topicName(id) {
-    const t = topicsCache.find(t => t.id === id);
-    return t ? t.name : 'Repaso mixto';
-  }
-
-  // Fisher-Yates: baraja una copia del arreglo, no muta el original
+  // Fisher-Yates: baraja una copia, no muta el original
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -70,77 +91,133 @@
     return a;
   }
 
-  // ---------- Carga inicial: temas ----------
-  async function loadTopics() {
+  function plural(n, one, many) {
+    return `${n} ${n === 1 ? one : many}`;
+  }
+
+  // ---------- Encabezado (textos editables en server/data/app.json) ----------
+  async function loadConfig() {
     try {
-      const topics = await api('/topics');
-      topicsCache = topics;
-      renderTopics(topics);
-      showScreen('topics');
+      const cfg = await api('/config');
+      if (cfg.eyebrow) el.heroEyebrow.textContent = cfg.eyebrow;
+      if (cfg.title) {
+        el.heroTitle.textContent = cfg.title;
+        document.title = cfg.title;
+      }
+      if (cfg.subtitle) el.heroSubtitle.textContent = cfg.subtitle;
+      if (cfg.sessionsLabel) el.sessionsLabel.textContent = cfg.sessionsLabel;
     } catch (err) {
-      showScreen('error');
+      // Si falla, se quedan los textos de respaldo del HTML; no es crítico.
     }
   }
 
-  function renderTopics(topics) {
-    topicListEl.innerHTML = '';
-    topics.forEach(t => {
+  // ---------- Lista de sesiones ----------
+  async function loadSessions() {
+    try {
+      state.sessions = await api('/sessions');
+    } catch (err) {
+      showError();
+      return;
+    }
+    if (!state.sessions.length) {
+      showError(
+        'Aún no hay sesiones disponibles',
+        'El servidor no encontró sesiones válidas. Revisa los archivos de server/data/sessions (puedes ejecutar «npm run validate»).'
+      );
+      return;
+    }
+    renderSessions();
+    showScreen('sessions');
+  }
+
+  function renderSessions() {
+    el.sessionList.innerHTML = '';
+    state.sessions.forEach(s => {
       const row = document.createElement('div');
-      row.className = 'topic-row';
+      row.className = 'session-row';
       row.setAttribute('role', 'listitem');
       row.tabIndex = 0;
-      row.innerHTML = `
-        <span class="topic-row__bar"></span>
-        <span class="topic-row__body">
-          <p class="topic-row__name">${t.name}</p>
-          <p class="topic-row__count">${t.count} pregunta${t.count === 1 ? '' : 's'}</p>
-        </span>
-        <span class="chevron" aria-hidden="true">›</span>
-      `;
-      row.addEventListener('click', () => startQuiz(t.id));
+
+      const badge = document.createElement('span');
+      badge.className = 'session-row__badge';
+      badge.textContent = String(s.number);
+
+      const body = document.createElement('span');
+      body.className = 'session-row__body';
+
+      const name = document.createElement('p');
+      name.className = 'session-row__name';
+      name.textContent = s.title;
+      body.appendChild(name);
+
+      if (s.description) {
+        const desc = document.createElement('p');
+        desc.className = 'session-row__desc';
+        desc.textContent = s.description;
+        body.appendChild(desc);
+      }
+
+      const count = document.createElement('p');
+      count.className = 'session-row__count';
+      count.textContent = plural(s.questionCount, 'pregunta', 'preguntas');
+      body.appendChild(count);
+
+      const chevron = document.createElement('span');
+      chevron.className = 'chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.textContent = '›';
+
+      row.append(badge, body, chevron);
+      row.addEventListener('click', () => startSession(s.id));
       row.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') startQuiz(t.id);
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          startSession(s.id);
+        }
       });
-      topicListEl.appendChild(row);
+      el.sessionList.appendChild(row);
     });
   }
 
-  // ---------- Flujo del quiz ----------
-  // Trae TODAS las preguntas del tema (o de todos, en modo mixto) una sola
-  // vez, las baraja, y las recorre sin repetir hasta agotarlas — así el
-  // denominador del progreso es fijo y ninguna pregunta se repite dentro
-  // de la misma sesión.
-  async function startQuiz(topicId) {
-    state.topic = topicId;
-    state.topicName = topicId ? topicName(topicId) : 'Repaso mixto';
+  // ---------- Flujo de la sesión ----------
+  // Se trae la sesión completa una sola vez; cada pregunta se muestra una
+  // vez, sin repetirse, y al terminar se pasa a la pantalla de resultados.
+  async function startSession(sessionId) {
+    const token = ++state.token;
     showScreen('quiz');
-    qPrompt.textContent = 'Cargando preguntas…';
-    mcqOptionsEl.innerHTML = '';
-    mcqOptionsEl.classList.add('hidden');
-    openAnswerEl.classList.add('hidden');
-    feedbackEl.classList.add('hidden');
-    btnNext.classList.add('hidden');
+    el.qPrompt.textContent = 'Cargando preguntas…';
+    el.options.innerHTML = '';
+    clearFigure();
+    el.feedback.classList.add('hidden');
+    el.btnNext.classList.add('hidden');
+    el.progressPill.textContent = 'Pregunta 0 de 0';
+    el.progressBar.style.width = '0%';
 
+    let session;
     try {
-      const qs = topicId ? `?topic=${encodeURIComponent(topicId)}` : '';
-      const questions = await api(`/questions${qs}`);
-      if (!questions.length) {
-        showScreen('error');
-        return;
-      }
-      state.queue = shuffle(questions);
-      state.index = -1;
-      state.correctCount = 0;
-      goToNextQuestion();
+      session = await api(`/sessions/${encodeURIComponent(sessionId)}`);
     } catch (err) {
-      showScreen('error');
+      if (token === state.token) showError();
+      return;
     }
+    if (token !== state.token) return;
+
+    if (!session.questions.length) {
+      showError('Esta sesión no tiene preguntas', 'Revisa el archivo de la sesión en server/data/sessions.');
+      return;
+    }
+
+    state.session = session;
+    state.queue = session.shuffleQuestions ? shuffle(session.questions) : session.questions.slice();
+    state.index = -1;
+    state.correctCount = 0;
+    el.qSessionTag.textContent = `Sesión ${session.number}`;
+    goToNextQuestion();
   }
 
-  function updateProgress() {
+  function setProgress(done) {
     const total = state.queue.length;
-    const current = Math.min(state.index + 1, total);
-    scorePill.textContent = `Pregunta ${current} de ${total}`;
+    el.progressBar.style.width = `${total ? Math.round((done / total) * 100) : 0}%`;
   }
 
   function goToNextQuestion() {
@@ -151,126 +228,180 @@
     }
     state.answered = false;
     state.current = state.queue[state.index];
-    updateProgress();
+
+    el.progressPill.textContent = `Pregunta ${state.index + 1} de ${state.queue.length}`;
+    setProgress(state.index);
     renderQuestion(state.current);
 
-    feedbackEl.classList.add('hidden');
-    feedbackEl.innerHTML = '';
-    btnNext.classList.add('hidden');
-    btnReveal.disabled = false;
-    openTextarea.value = '';
+    el.feedback.classList.add('hidden');
+    el.feedback.textContent = '';
+    el.btnNext.classList.add('hidden');
+    if (state.index > 0) screens.quiz.scrollIntoView({ block: 'start' });
   }
 
   function showCompletion() {
     const total = state.queue.length;
-    completeScoreEl.textContent = `${state.correctCount} de ${total} correctas`;
-    completeTopicEl.textContent = state.topicName;
+    el.completeScore.textContent = `${state.correctCount} de ${total} correctas`;
+    el.completeSession.textContent = `Sesión ${state.session.number}: ${state.session.title}`;
+
+    const pos = state.sessions.findIndex(s => s.id === state.session.id);
+    const next = pos >= 0 ? state.sessions[pos + 1] : null;
+    el.btnNextSession.classList.toggle('hidden', !next);
+    el.btnNextSession.dataset.sessionId = next ? next.id : '';
+
+    setProgress(total);
     showScreen('complete');
   }
 
-  function renderQuestion(q) {
-    qPrompt.textContent = q.prompt;
-    qTypeTag.textContent = q.type === 'mcq' ? 'Opción múltiple' : 'Pregunta abierta';
-    qTopicTag.textContent = topicName(q.topic);
+  // ---------- Imagen de la pregunta ----------
+  function clearFigure() {
+    el.figure.classList.add('hidden');
+    el.qImage.removeAttribute('src');
+    el.qImage.alt = '';
+    el.qImage.onerror = null;
+    el.qCaption.textContent = '';
+    el.figureBtn.classList.remove('hidden');
+    const old = el.figure.querySelector('.question-figure__error');
+    if (old) old.remove();
+  }
 
-    mcqOptionsEl.innerHTML = '';
-    if (q.type === 'mcq') {
-      mcqOptionsEl.classList.remove('hidden');
-      openAnswerEl.classList.add('hidden');
-      q.options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerHTML = `
-          <span class="option-btn__marker">${opt.id.toUpperCase()}</span>
-          <span>${opt.text}</span>
-        `;
-        btn.addEventListener('click', () => selectOption(opt.id, btn));
-        mcqOptionsEl.appendChild(btn);
-      });
-    } else {
-      openAnswerEl.classList.remove('hidden');
-      mcqOptionsEl.classList.add('hidden');
-    }
+  function renderFigure(image) {
+    clearFigure();
+    if (!image || !image.url) return;
+
+    el.figure.classList.remove('hidden');
+    el.qCaption.textContent = image.caption || '';
+    el.qImage.alt = image.alt || '';
+    el.qImage.onerror = () => {
+      el.figureBtn.classList.add('hidden');
+      const note = document.createElement('p');
+      note.className = 'question-figure__error';
+      note.textContent = 'No se pudo cargar la imagen. Si no hay conexión a internet, las imágenes alojadas en la web no se pueden mostrar.';
+      el.figure.insertBefore(note, el.qCaption);
+    };
+    el.qImage.src = image.url;
+  }
+
+  function openLightbox() {
+    if (!el.qImage.getAttribute('src')) return;
+    el.lightboxImg.src = el.qImage.currentSrc || el.qImage.src;
+    el.lightboxImg.alt = el.qImage.alt;
+    el.lightbox.classList.remove('hidden');
+  }
+
+  function closeLightbox() {
+    el.lightbox.classList.add('hidden');
+    el.lightboxImg.removeAttribute('src');
+  }
+
+  // ---------- Pregunta ----------
+  function renderQuestion(q) {
+    el.qPrompt.textContent = q.prompt;
+    renderFigure(q.image);
+
+    el.options.innerHTML = '';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-btn';
+      btn.dataset.optionId = opt.id;
+
+      const marker = document.createElement('span');
+      marker.className = 'option-btn__marker';
+      marker.textContent = opt.id.toUpperCase();
+
+      const text = document.createElement('span');
+      text.textContent = opt.text;
+
+      btn.append(marker, text);
+      btn.addEventListener('click', () => selectOption(opt.id, btn));
+      el.options.appendChild(btn);
+    });
   }
 
   async function selectOption(optionId, btnEl) {
     if (state.answered) return;
     state.answered = true;
+    const token = state.token;
+    const question = state.current;
 
     let result;
     try {
-      result = await api(`/questions/${state.current.id}/check`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionId })
-      });
+      result = await api(
+        `/sessions/${encodeURIComponent(state.session.id)}/questions/${encodeURIComponent(question.id)}/check`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ optionId })
+        }
+      );
     } catch (err) {
-      showScreen('error');
+      if (token === state.token) {
+        state.answered = false; // permite reintentar sin perder la pregunta
+        showError();
+      }
       return;
     }
+    if (token !== state.token || question !== state.current) return;
 
     if (result.correct) state.correctCount += 1;
 
-    // Marca visualmente todas las opciones
-    Array.from(mcqOptionsEl.children).forEach(el => {
-      el.disabled = true;
-      const marker = el.querySelector('.option-btn__marker').textContent.toLowerCase();
-      if (marker === result.correctOptionId) {
-        el.classList.add('is-correct');
-      } else if (el === btnEl) {
-        el.classList.add('is-incorrect');
+    Array.from(el.options.children).forEach(node => {
+      node.disabled = true;
+      if (node.dataset.optionId === result.correctOptionId) {
+        node.classList.add('is-correct');
+      } else if (node === btnEl) {
+        node.classList.add('is-incorrect');
       } else {
-        el.classList.add('is-faded');
+        node.classList.add('is-faded');
       }
     });
 
-    feedbackEl.className = `feedback ${result.correct ? 'is-correct' : 'is-incorrect'}`;
-    feedbackEl.innerHTML = `
-      <p class="feedback__verdict">${result.correct ? '¡Correcto!' : 'No es correcto'}</p>
-      <p class="feedback__body">${result.explanation || ''}</p>
-    `;
-    feedbackEl.classList.remove('hidden');
-    btnNext.classList.remove('hidden');
-  }
-
-  async function revealAnswer() {
-    if (state.answered) return;
-    state.answered = true;
-
-    let result;
-    try {
-      result = await api(`/questions/${state.current.id}/check`, { method: 'POST' });
-    } catch (err) {
-      showScreen('error');
-      return;
+    el.feedback.className = `feedback ${result.correct ? 'is-correct' : 'is-incorrect'}`;
+    el.feedback.textContent = '';
+    const verdict = document.createElement('p');
+    verdict.className = 'feedback__verdict';
+    verdict.textContent = result.correct ? '¡Correcto!' : 'No es correcto';
+    el.feedback.appendChild(verdict);
+    if (result.explanation) {
+      const body = document.createElement('p');
+      body.className = 'feedback__body';
+      body.textContent = result.explanation;
+      el.feedback.appendChild(body);
     }
 
-    const points = (result.keyPoints || [])
-      .map(p => `<li>${p}</li>`).join('');
+    setProgress(state.index + 1);
+    el.btnNext.textContent = state.index + 1 >= state.queue.length ? 'Ver resultado →' : 'Siguiente pregunta →';
+    el.btnNext.classList.remove('hidden');
+  }
 
-    feedbackEl.className = 'feedback is-info';
-    feedbackEl.innerHTML = `
-      <p class="feedback__verdict">Respuesta de referencia</p>
-      <p class="feedback__body">${result.referenceAnswer}</p>
-      ${points ? `<ul class="feedback__points">${points}</ul>` : ''}
-    `;
-    feedbackEl.classList.remove('hidden');
-    btnNext.classList.remove('hidden');
-    btnReveal.disabled = true;
+  function backToSessions() {
+    state.token += 1; // invalida cualquier respuesta de red pendiente
+    closeLightbox();
+    showScreen('sessions');
   }
 
   // ---------- Eventos ----------
-  mixedBtn.addEventListener('click', () => startQuiz(null));
-  mixedBtn.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') startQuiz(null);
+  el.btnBack.addEventListener('click', backToSessions);
+  el.btnCompleteBack.addEventListener('click', backToSessions);
+  el.btnNext.addEventListener('click', goToNextQuestion);
+  el.btnRepeat.addEventListener('click', () => startSession(state.session.id));
+  el.btnNextSession.addEventListener('click', () => {
+    const id = el.btnNextSession.dataset.sessionId;
+    if (id) startSession(id);
   });
-  btnChangeTopic.addEventListener('click', () => showScreen('topics'));
-  btnRetry.addEventListener('click', loadTopics);
-  btnNext.addEventListener('click', goToNextQuestion);
-  btnReveal.addEventListener('click', revealAnswer);
-  btnRetryTopic.addEventListener('click', () => startQuiz(state.topic));
-  btnCompleteChangeTopic.addEventListener('click', () => showScreen('topics'));
+  el.btnRetry.addEventListener('click', init);
+  el.figureBtn.addEventListener('click', openLightbox);
+  el.lightbox.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
 
   // ---------- Arranque ----------
-  loadTopics();
+  function init() {
+    loadConfig();
+    loadSessions();
+  }
+
+  init();
 })();

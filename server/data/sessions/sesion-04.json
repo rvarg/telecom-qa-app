@@ -1,0 +1,76 @@
+{
+  "title": "Análisis en frecuencia y filtros digitales",
+  "description": "DFT/FFT, resolución en frecuencia y filtros FIR frente a IIR.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "¿Qué ventaja ofrece la FFT respecto a calcular la DFT directamente?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Convierte la señal del dominio de la frecuencia al del tiempo"
+        },
+        {
+          "id": "b",
+          "text": "Reduce la complejidad computacional de O(N²) a O(N log N)"
+        },
+        {
+          "id": "c",
+          "text": "Elimina la necesidad de muestrear la señal"
+        },
+        {
+          "id": "d",
+          "text": "Aumenta la resolución en frecuencia sin cambiar N ni fs"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "La FFT es un algoritmo eficiente para calcular la misma DFT, aprovechando simetrías y periodicidades; el resultado es idéntico, solo más rápido."
+    },
+    {
+      "prompt": "¿Cuál es la resolución en frecuencia de una DFT de N puntos de una señal muestreada a fs?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Δf = fs / N"
+        },
+        {
+          "id": "b",
+          "text": "Δf = fs · N"
+        },
+        {
+          "id": "c",
+          "text": "Δf = 2·fs"
+        },
+        {
+          "id": "d",
+          "text": "Δf = 1 / N"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "Los puntos de la DFT están separados fs/N Hz. Para afinar la resolución hay que observar la señal durante más tiempo (más muestras N)."
+    },
+    {
+      "prompt": "¿Qué característica distingue a un filtro FIR frente a uno IIR?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Siempre necesita menor orden para la misma selectividad"
+        },
+        {
+          "id": "b",
+          "text": "Su respuesta al impulso es de duración infinita"
+        },
+        {
+          "id": "c",
+          "text": "Usa realimentación de la salida"
+        },
+        {
+          "id": "d",
+          "text": "Puede diseñarse con fase lineal y es siempre estable"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "Un FIR no tiene realimentación (respuesta al impulso finita), por lo que es siempre estable y puede tener fase lineal; a cambio suele requerir más orden que un IIR."
+    }
+  ]
+}

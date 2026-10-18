@@ -1,18 +1,28 @@
 # Telecom Q&A
 
-Herramienta interactiva de preguntas y respuestas sobre telecomunicaciones
-(fibra óptica/GPON, DSP, IoT y fundamentos), con cliente para celular y
-servidor desplegable en una intranet **o** en Vercel (plan Hobby).
+Herramienta interactiva de práctica sobre telecomunicaciones organizada en
+**10 sesiones de clase**, cada una con **hasta 10 preguntas de opción
+múltiple** (con imágenes opcionales). Cliente para celular y servidor
+desplegable en una intranet **o** en Vercel (plan Hobby).
+
+Está pensada como **plantilla**: el contenido vive en archivos JSON
+separados (uno por sesión) que puedes editar sin tocar el código — ver
+[`server/data/README.md`](server/data/README.md).
 
 ```
 telecom-qa-app/
 ├── public/         HTML/CSS/JS del cliente — fuente única, sirve tanto
 │                   para Vercel (sitio estático) como para el APK
+│   └── img/        Imágenes locales para usar en las preguntas
 ├── client/         Configuración de Capacitor que empaqueta public/ en un APK
 ├── server/
-│   ├── app.js      La app Express (rutas + banco de preguntas) — sin escuchar puerto
+│   ├── app.js      La app Express (rutas de la API) — sin escuchar puerto
 │   ├── server.js   Arranque para intranet: usa app.js y escucha en 0.0.0.0
-│   └── data/questions.json
+│   ├── validate.js Revisa los archivos de sesiones (npm run validate)
+│   ├── lib/        Carga y validación de sesiones
+│   └── data/
+│       ├── app.json            Textos del encabezado de la app
+│       └── sessions/           sesion-01.json ... sesion-10.json (+ plantilla)
 ├── api/
 │   └── index.js    Punto de entrada para Vercel: exporta la misma app.js
 ├── vercel.json     Enruta /api/* a la función, el resto a public/
@@ -21,12 +31,12 @@ telecom-qa-app/
 ```
 
 `server/app.js` es la única definición de la API — tanto `server/server.js`
-(intranet) como `api/index.js` (Vercel) la reutilizan tal cual, así que las
-preguntas y la lógica de corrección son idénticas sin importar dónde corra.
+(intranet) como `api/index.js` (Vercel) la reutilizan tal cual, así que el
+contenido y la lógica de corrección son idénticos sin importar dónde corra.
 
 ## Cómo funciona
 
-1. El **backend** expone el banco de preguntas por HTTP, en dos variantes
+1. El **backend** expone las sesiones y corrige las respuestas por HTTP, en dos variantes
    posibles (elige una, o mantén ambas):
    - **Intranet**: `server/server.js` corriendo en una máquina de la red
      local (ver [`server/README.md`](server/README.md)).
@@ -34,10 +44,12 @@ preguntas y la lógica de corrección son idénticas sin importar dónde corra.
      no solo dentro del campus): ver la sección de abajo.
 2. El **cliente** es una app de Android instalada en los celulares de los
    estudiantes, que se conecta al backend elegido.
-3. Las preguntas combinan **opción múltiple** (con corrección automática y
-   explicación) y **preguntas abiertas** (el estudiante escribe su
-   respuesta y luego revela una respuesta de referencia con puntos clave,
-   para autoevaluarse).
+3. El estudiante elige una sesión, responde sus preguntas (cada una
+   aparece una sola vez, en orden aleatorio por defecto), recibe
+   corrección y explicación inmediatas, y al terminar ve su resultado y
+   puede repetir la sesión o pasar a la siguiente. Solo hay preguntas de
+   **opción múltiple**; algunas pueden llevar una imagen que se puede
+   ampliar tocándola.
 
 ## Puesta en marcha rápida — intranet
 
@@ -58,8 +70,8 @@ alcanzable dentro de la red del campus, obtienes una URL pública
 cualquier red (Wi-Fi de casa, datos móviles, etc.) — no solo la intranet.
 A cambio, el plan Hobby está pensado para uso personal/no comercial y el
 sistema de archivos del servidor pasa a ser de **solo lectura**: no hay
-forma de editar `questions.json` en caliente como con `/api/admin/reload`
-en intranet — actualizar preguntas significa editar el archivo, hacer
+forma de editar los archivos de sesiones en caliente como con `/api/admin/reload`
+en intranet — actualizar el contenido significa editar los archivos, hacer
 commit y volver a desplegar (Vercel lo hace automático si conectas un
 repo de Git).
 
@@ -119,13 +131,21 @@ Como Vercel sirve todo por HTTPS, **puedes saltarte** el paso del
 `AndroidManifest.xml` (`usesCleartextTraffic`) que sí hace falta para un
 backend de intranet en HTTP plano.
 
-### 5. Actualizar preguntas después de desplegar
+### 5. Actualizar sesiones después de desplegar
 
-Edita `server/data/questions.json`, luego:
+Edita los archivos de `server/data/sessions/` (y, si agregaste imágenes
+locales, súbelas a `public/img/`). Antes de publicar, revísalos:
 
 ```bash
-git add server/data/questions.json
-git commit -m "Actualiza banco de preguntas"
+npm install          # solo la primera vez
+npm run validate
+```
+
+Luego:
+
+```bash
+git add server/data public/img
+git commit -m "Actualiza sesiones"
 git push
 ```
 
@@ -144,28 +164,36 @@ el APK — solo el backend cambia.
   un curso; si el uso crece mucho (miles de estudiantes concurrentes),
   revisa los límites exactos en la documentación de Vercel.
 
-## Alcance de esta primera versión
+## Alcance de esta versión
 
-Conversamos el alcance antes de construirlo, así que esta versión
-deliberadamente **no incluye todavía**:
+Esta versión deliberadamente **no incluye**:
 
-- Panel de administración para cargar preguntas desde la app — por ahora
-  el banco se edita directamente en `server/data/questions.json` (o desde
-  un Excel que exportes a ese formato).
-- Cuentas de estudiante ni seguimiento de calificaciones — el puntaje de
-  la sesión se muestra solo mientras el estudiante usa la app, y no se
-  guarda en el servidor.
+- Panel de administración para cargar preguntas desde la app — el
+  contenido se edita directamente en los archivos JSON de
+  `server/data/sessions/` (ver [`server/data/README.md`](server/data/README.md)).
+- Preguntas abiertas — se eliminaron; solo hay opción múltiple.
+- Cuentas de estudiante ni seguimiento de calificaciones — el resultado
+  se muestra solo mientras el estudiante usa la app y no se guarda en el
+  servidor.
+- Un repaso mixto con preguntas de todas las sesiones (existía en la
+  versión anterior; el diseño actual es una sesión a la vez).
 
-Ambas cosas quedaron identificadas como próximos pasos naturales: un
-panel admin web (para no depender de editar JSON a mano) y, si más
-adelante quieres registrar desempeño por estudiante, una capa ligera de
-login + base de datos (SQLite es suficiente para uso de un curso) en el
-mismo servidor Express. Aviso si quieres que construya cualquiera de las
-dos ahora.
+Son extensiones naturales si más adelante las necesitas: un panel admin
+web, registro de desempeño por estudiante (login + una base de datos
+ligera como SQLite) o un modo de repaso mixto.
 
-## Banco de preguntas incluido
+## Contenido incluido
 
-18 preguntas de muestra repartidas en 4 temas, alineadas con los cursos
-existentes (fibra óptica/GPON, DSP, IoT/ODS, fundamentos). Es un punto de
-partida — amplía `server/data/questions.json` con las preguntas propias
-de cada curso siguiendo el mismo formato.
+10 sesiones de ejemplo con 3 preguntas cada una, que cubren fundamentos de
+telecomunicaciones, modulación y multiplexación, muestreo y cuantización,
+análisis en frecuencia y filtros, fibra óptica, redes de acceso FTTx/PON,
+diseño de enlaces FTTH, IoT/LPWAN, modelo OSI y regulación del espectro.
+Los títulos y las preguntas son un punto de partida: reemplázalos con los
+temas de tus clases siguiendo el mismo formato (hay una plantilla en
+`server/data/sessions/_plantilla-sesion.json`).
+
+Ejemplos de imágenes incluidos: la sesión 5 usa una imagen local
+(`public/img/fibra-estructura.svg`, ilustración propia) y la sesión 6 una
+imagen de la web (Wikimedia Commons). Las imágenes de la web requieren
+que el dispositivo tenga acceso a internet; para uso solo en intranet o
+sin conexión, usa imágenes locales.

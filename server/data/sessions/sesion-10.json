@@ -1,0 +1,76 @@
+{
+  "title": "Regulación y espectro radioeléctrico",
+  "description": "Gestión del espectro y marco regulatorio.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "En Ecuador, ¿qué entidad es el organismo técnico de regulación y control de las telecomunicaciones y del espectro radioeléctrico?",
+      "options": [
+        {
+          "id": "a",
+          "text": "ARCOTEL (Agencia de Regulación y Control de las Telecomunicaciones)"
+        },
+        {
+          "id": "b",
+          "text": "SENESCYT"
+        },
+        {
+          "id": "c",
+          "text": "Ministerio de Salud Pública"
+        },
+        {
+          "id": "d",
+          "text": "Banco Central del Ecuador"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "ARCOTEL es el organismo técnico encargado de administrar, regular y controlar el uso del espectro radioeléctrico y los servicios de telecomunicaciones en Ecuador."
+    },
+    {
+      "prompt": "¿Por qué se considera el espectro radioeléctrico un recurso limitado?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Porque las ondas de radio se consumen al propagarse"
+        },
+        {
+          "id": "b",
+          "text": "Porque solo se puede asignar a un único operador por país"
+        },
+        {
+          "id": "c",
+          "text": "Porque su uso está prohibido fuera de las ciudades"
+        },
+        {
+          "id": "d",
+          "text": "Porque las bandas utilizables son finitas y el uso simultáneo de la misma frecuencia en una zona genera interferencia"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "Las frecuencias útiles son finitas y dos transmisores en la misma banda y zona se interfieren, por lo que su uso debe coordinarse y asignarse."
+    },
+    {
+      "prompt": "¿Qué caracteriza a las bandas ISM (por ejemplo, 2,4 GHz) usadas por Wi-Fi y muchos dispositivos IoT?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Están reservadas exclusivamente para telefonía móvil"
+        },
+        {
+          "id": "b",
+          "text": "Pueden usarse sin una concesión individual, respetando los límites técnicos establecidos"
+        },
+        {
+          "id": "c",
+          "text": "Requieren siempre una licencia por cada dispositivo"
+        },
+        {
+          "id": "d",
+          "text": "No admiten ninguna regulación de potencia"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Son bandas de uso libre (no licenciado) sujetas a límites técnicos como la potencia máxima. Las condiciones exactas las define la normativa de cada país."
+    }
+  ]
+}

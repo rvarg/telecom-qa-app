@@ -4,7 +4,8 @@
   "description": "Servidor de preguntas y respuestas de telecomunicaciones para uso en intranet",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "validate": "node validate.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

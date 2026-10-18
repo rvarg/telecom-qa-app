@@ -1,0 +1,76 @@
+{
+  "title": "IoT y redes LPWAN",
+  "description": "Conectividad de bajo consumo y largo alcance para sensores.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "¿Cuál de las siguientes tecnologías es más adecuada para sensores IoT de bajo consumo y largo alcance (LPWAN)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Bluetooth Low Energy"
+        },
+        {
+          "id": "b",
+          "text": "LoRaWAN"
+        },
+        {
+          "id": "c",
+          "text": "Wi-Fi 6"
+        },
+        {
+          "id": "d",
+          "text": "USB 3.0"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "LoRaWAN está diseñada para alcances de varios kilómetros con muy bajo consumo, ideal para sensórica distribuida como calidad de aire o agricultura."
+    },
+    {
+      "prompt": "¿Qué ventaja ofrece un ESP32 frente a un microcontrolador básico sin conectividad integrada?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Incluye Wi-Fi y Bluetooth integrados en el mismo chip"
+        },
+        {
+          "id": "b",
+          "text": "No requiere alimentación eléctrica"
+        },
+        {
+          "id": "c",
+          "text": "Elimina la necesidad de programación"
+        },
+        {
+          "id": "d",
+          "text": "Solo funciona con fibra óptica"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "El ESP32 integra radios Wi-Fi y Bluetooth junto al procesador, lo que simplifica el diseño de nodos IoT conectados sin módulos externos."
+    },
+    {
+      "prompt": "¿Qué compromiso es típico de las tecnologías LPWAN?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Alta tasa de datos a cambio de un alcance de pocos metros"
+        },
+        {
+          "id": "b",
+          "text": "Alto consumo para lograr baja latencia garantizada"
+        },
+        {
+          "id": "c",
+          "text": "Bajo consumo y largo alcance a cambio de una baja tasa de datos"
+        },
+        {
+          "id": "d",
+          "text": "Requieren fibra óptica hasta cada sensor"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "Las LPWAN envían pocos bytes de forma esporádica: sacrifican velocidad para lograr años de autonomía con batería y alcance de kilómetros."
+    }
+  ]
+}

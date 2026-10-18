@@ -1,0 +1,76 @@
+{
+  "title": "Modulación y multiplexación",
+  "description": "Técnicas para transportar y compartir información en un canal.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "¿Cuál de las siguientes técnicas de modulación es de tipo digital?",
+      "options": [
+        {
+          "id": "a",
+          "text": "AM (Amplitude Modulation)"
+        },
+        {
+          "id": "b",
+          "text": "FM (Frequency Modulation)"
+        },
+        {
+          "id": "c",
+          "text": "QPSK (Quadrature Phase Shift Keying)"
+        },
+        {
+          "id": "d",
+          "text": "PM analógica"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "QPSK codifica símbolos digitales mediante cuatro fases posibles de la portadora; AM, FM y PM analógica modulan señales continuas."
+    },
+    {
+      "prompt": "¿Qué técnica de multiplexación asigna a cada usuario intervalos de tiempo exclusivos sobre el mismo canal?",
+      "options": [
+        {
+          "id": "a",
+          "text": "TDM (multiplexación por división de tiempo)"
+        },
+        {
+          "id": "b",
+          "text": "FDM (multiplexación por división de frecuencia)"
+        },
+        {
+          "id": "c",
+          "text": "WDM (multiplexación por división de longitud de onda)"
+        },
+        {
+          "id": "d",
+          "text": "CDMA (acceso múltiple por división de código)"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "En TDM cada señal transmite en su propio intervalo (time slot); FDM reparte bandas de frecuencia, WDM longitudes de onda y CDMA códigos."
+    },
+    {
+      "prompt": "¿Qué ventaja ofrece QPSK frente a BPSK con la misma tasa de símbolos (mismo ancho de banda)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Elimina por completo el efecto del ruido"
+        },
+        {
+          "id": "b",
+          "text": "Transmite 2 bits por símbolo, duplicando la tasa de bits"
+        },
+        {
+          "id": "c",
+          "text": "Usa una sola fase de portadora"
+        },
+        {
+          "id": "d",
+          "text": "No necesita sincronización de portadora"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "QPSK usa cuatro fases (2 bits por símbolo) y BPSK dos (1 bit por símbolo), por lo que con la misma tasa de símbolos QPSK duplica la tasa de bits."
+    }
+  ]
+}

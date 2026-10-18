@@ -1,0 +1,76 @@
+{
+  "title": "Modelo OSI y protocolos de red",
+  "description": "Funciones de las capas y protocolos de transporte.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "¿Qué capa del modelo OSI es responsable de la entrega confiable extremo a extremo mediante mecanismos como retransmisión y control de flujo?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Capa física"
+        },
+        {
+          "id": "b",
+          "text": "Capa de enlace de datos"
+        },
+        {
+          "id": "c",
+          "text": "Capa de transporte"
+        },
+        {
+          "id": "d",
+          "text": "Capa de presentación"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "La capa de transporte (por ejemplo, con TCP) implementa control de flujo, retransmisión y confirmación de entrega entre aplicaciones extremo a extremo."
+    },
+    {
+      "prompt": "¿Qué capa del modelo OSI se encarga del direccionamiento lógico (IP) y del enrutamiento de paquetes?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Capa de red"
+        },
+        {
+          "id": "b",
+          "text": "Capa de sesión"
+        },
+        {
+          "id": "c",
+          "text": "Capa de enlace de datos"
+        },
+        {
+          "id": "d",
+          "text": "Capa de aplicación"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "La capa de red (capa 3) asigna direcciones lógicas y decide la ruta de los paquetes entre redes distintas."
+    },
+    {
+      "prompt": "¿Qué protocolo de transporte prioriza la baja latencia sin garantizar la entrega ni el orden de los datagramas?",
+      "options": [
+        {
+          "id": "a",
+          "text": "TCP"
+        },
+        {
+          "id": "b",
+          "text": "UDP"
+        },
+        {
+          "id": "c",
+          "text": "HTTP"
+        },
+        {
+          "id": "d",
+          "text": "ARP"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "UDP no establece conexión ni retransmite: es más ligero y rápido, útil en voz, video y telemetría donde importa más la inmediatez que la fiabilidad total."
+    }
+  ]
+}

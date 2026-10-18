@@ -13,56 +13,50 @@
 
 <div id="app">
 
-  <!-- Encabezado -->
+  <!-- Encabezado: los textos se leen de server/data/app.json al cargar.
+       Lo que está aquí es solo el valor de respaldo. -->
   <header class="hero">
     <svg class="hero__signal" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
       <polyline points="0,20 40,20 55,6 70,34 85,6 100,34 115,20 400,20" />
     </svg>
     <div class="hero__content">
-      <p class="hero__eyebrow">Programa Ingenieria en Telecomunicaciones</p>
-      <h1 class="hero__title">Telecom&nbsp;Q&amp;A</h1>
-      <p class="hero__subtitle">Practica y repasa conceptos de fibra óptica, DSP, IoT y fundamentos de comunicaciones.</p>
+      <p class="hero__eyebrow" id="hero-eyebrow">Programa de Telecomunicaciones</p>
+      <h1 class="hero__title" id="hero-title">Telecom Q&amp;A</h1>
+      <p class="hero__subtitle" id="hero-subtitle">Elige una sesión de clase y practica con preguntas de opción múltiple.</p>
     </div>
   </header>
 
   <main id="main">
 
-    <!-- Pantalla: selección de tema -->
-    <section id="screen-topics" class="screen">
-      <p class="section-label">Elige un tema para empezar</p>
-      <div id="topic-list" class="topic-list" role="list"></div>
-
-      <div class="mixed-card" id="mixed-topics-btn" role="button" tabindex="0">
-        <div>
-          <p class="mixed-card__title">Repaso mixto</p>
-          <p class="mixed-card__desc">Preguntas de todos los temas, en orden aleatorio.</p>
-        </div>
-        <span class="chevron" aria-hidden="true">›</span>
-      </div>
+    <!-- Pantalla: lista de sesiones -->
+    <section id="screen-sessions" class="screen">
+      <p class="section-label" id="sessions-label">Elige una sesión</p>
+      <div id="session-list" class="session-list" role="list"></div>
     </section>
 
     <!-- Pantalla: pregunta -->
     <section id="screen-quiz" class="screen hidden">
       <div class="quiz-topbar">
-        <button id="btn-change-topic" class="btn-ghost">← Cambiar tema</button>
-        <div class="score-pill" id="score-pill">Pregunta 0 de 0</div>
+        <button id="btn-back" class="btn-ghost">← Sesiones</button>
+        <div class="score-pill" id="progress-pill">Pregunta 0 de 0</div>
       </div>
+
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
 
       <div class="question-card" id="question-card">
         <div class="question-card__meta">
-          <span class="tag" id="q-type-tag">Opción múltiple</span>
-          <span class="tag tag--muted" id="q-topic-tag">Tema</span>
+          <span class="tag" id="q-session-tag">Sesión</span>
         </div>
         <p class="question-card__prompt" id="q-prompt">Cargando pregunta…</p>
 
-        <!-- Opción múltiple -->
-        <div id="mcq-options" class="options-list"></div>
+        <figure class="question-figure hidden" id="q-figure">
+          <button type="button" class="question-figure__btn" id="q-figure-btn" aria-label="Ampliar imagen">
+            <img id="q-image" alt="" />
+          </button>
+          <figcaption id="q-caption" class="question-figure__caption"></figcaption>
+        </figure>
 
-        <!-- Pregunta abierta -->
-        <div id="open-answer" class="open-answer hidden">
-          <textarea id="open-textarea" rows="4" placeholder="Escribe tu respuesta aquí (opcional, es para tu propio análisis)…"></textarea>
-          <button id="btn-reveal" class="btn-primary">Ver respuesta de referencia</button>
-        </div>
+        <div id="mcq-options" class="options-list"></div>
 
         <div id="feedback" class="feedback hidden"></div>
       </div>
@@ -73,24 +67,31 @@
     <!-- Pantalla: fin de la sesión -->
     <section id="screen-complete" class="screen hidden">
       <div class="complete-box">
-        <p class="complete-box__title">¡Completaste el repaso!</p>
+        <p class="complete-box__title">¡Completaste la sesión!</p>
         <p class="complete-box__score" id="complete-score">0 de 0 correctas</p>
-        <p class="complete-box__topic" id="complete-topic"></p>
-        <button id="btn-retry-topic" class="btn-primary">Repetir este tema</button>
-        <button id="btn-complete-change-topic" class="btn-ghost btn-ghost--block">Cambiar tema</button>
+        <p class="complete-box__topic" id="complete-session"></p>
+        <button id="btn-next-session" class="btn-primary btn-next-session hidden">Siguiente sesión →</button>
+        <button id="btn-repeat" class="btn-secondary">Repetir esta sesión</button>
+        <button id="btn-complete-back" class="btn-ghost btn-ghost--block">Elegir otra sesión</button>
       </div>
     </section>
 
     <!-- Estado de error de conexión -->
     <section id="screen-error" class="screen hidden">
       <div class="error-box">
-        <p class="error-box__title">No se pudo conectar con el servidor</p>
-        <p class="error-box__desc">Verifica que el dispositivo esté conectado a la red de la intranet y que la dirección del servidor configurada en <code>config.js</code> sea correcta.</p>
+        <p class="error-box__title" id="error-title">No se pudo cargar el contenido</p>
+        <p class="error-box__desc" id="error-desc">Verifica tu conexión y que la dirección del servidor configurada en <code>config.js</code> sea correcta.</p>
         <button id="btn-retry" class="btn-primary">Reintentar</button>
       </div>
     </section>
 
   </main>
+</div>
+
+<!-- Imagen ampliada (toca en cualquier parte para cerrar) -->
+<div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+  <img id="lightbox-img" alt="" />
+  <p class="lightbox__hint">Toca para cerrar</p>
 </div>
 
 <script src="js/config.js"></script>

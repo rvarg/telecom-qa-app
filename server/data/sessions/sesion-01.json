@@ -1,0 +1,76 @@
+{
+  "title": "Fundamentos de las telecomunicaciones",
+  "description": "Relación señal a ruido y capacidad de canal.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "¿Qué mide la relación señal a ruido (SNR) en un sistema de comunicaciones?",
+      "options": [
+        {
+          "id": "a",
+          "text": "La potencia de la señal respecto a la potencia del ruido presente en el canal"
+        },
+        {
+          "id": "b",
+          "text": "La velocidad máxima de transmisión sin importar el canal"
+        },
+        {
+          "id": "c",
+          "text": "El retardo de propagación del canal"
+        },
+        {
+          "id": "d",
+          "text": "El número de usuarios simultáneos en la red"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "La SNR compara la potencia de la señal útil con la del ruido; una SNR más alta generalmente permite mayor capacidad de canal."
+    },
+    {
+      "prompt": "Según el teorema de Shannon, C = B·log₂(1 + SNR). Si se duplica el ancho de banda B manteniendo constante la SNR, ¿qué ocurre con la capacidad máxima C?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Se reduce a la mitad"
+        },
+        {
+          "id": "b",
+          "text": "Se duplica"
+        },
+        {
+          "id": "c",
+          "text": "Permanece igual"
+        },
+        {
+          "id": "d",
+          "text": "Aumenta solo en 1 bit/s"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Con SNR constante, C es proporcional a B, así que duplicar B duplica C. En la práctica, al ampliar B también entra más ruido y la SNR suele bajar."
+    },
+    {
+      "prompt": "¿En qué unidad se expresa habitualmente la relación señal a ruido?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hertz (Hz)"
+        },
+        {
+          "id": "b",
+          "text": "Baudios"
+        },
+        {
+          "id": "c",
+          "text": "Decibelios (dB)"
+        },
+        {
+          "id": "d",
+          "text": "Vatios por metro (W/m)"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "La SNR es una relación de potencias y se expresa en decibelios: SNR(dB) = 10·log₁₀(P_señal / P_ruido)."
+    }
+  ]
+}

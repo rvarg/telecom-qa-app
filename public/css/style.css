@@ -2,6 +2,7 @@
   --navy: #0B2A4A;
   --navy-deep: #071B33;
   --teal: #12897F;
+  --teal-dark: #0E6F67;
   --teal-soft: #DCEEEC;
   --amber: #E8963B;
   --amber-soft: #FBEBD8;
@@ -49,14 +50,14 @@ button {
 
 button:focus-visible,
 [role="button"]:focus-visible,
-textarea:focus-visible {
+.session-row:focus-visible {
   outline: 3px solid var(--amber);
   outline-offset: 2px;
 }
 
 .hidden { display: none !important; }
 
-/* ---------- Hero ---------- */
+/* ---------- Encabezado ---------- */
 
 .hero {
   position: relative;
@@ -124,86 +125,75 @@ main {
   font-weight: 500;
 }
 
-/* ---------- Lista de temas ---------- */
+/* ---------- Lista de sesiones ---------- */
 
-.topic-list {
+.session-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 12px;
 }
 
-.topic-row {
+.session-row {
   display: flex;
   align-items: center;
   gap: 14px;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 14px 16px 14px 14px;
   cursor: pointer;
   text-align: left;
 }
 
-.topic-row__bar {
-  width: 4px;
-  align-self: stretch;
-  border-radius: 4px;
-  background: var(--teal);
-  flex-shrink: 0;
+.session-row:active {
+  border-color: var(--teal);
 }
 
-.topic-row__body {
+.session-row__badge {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.session-row__body {
   flex: 1;
   min-width: 0;
 }
 
-.topic-row__name {
-  margin: 0 0 3px;
+.session-row__name {
+  margin: 0 0 2px;
   font-size: 15.5px;
   font-weight: 600;
+  line-height: 1.3;
   color: var(--ink);
 }
 
-.topic-row__count {
-  margin: 0;
+.session-row__desc {
+  margin: 0 0 4px;
   font-size: 13px;
+  line-height: 1.4;
   color: var(--ink-soft);
 }
 
-.topic-row .chevron {
+.session-row__count {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--teal);
+}
+
+.session-row .chevron {
   color: var(--ink-soft);
   font-size: 20px;
-}
-
-.mixed-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  background: var(--navy);
-  border-radius: var(--radius);
-  padding: 18px 16px;
-  margin-top: 6px;
-  cursor: pointer;
-}
-
-.mixed-card__title {
-  margin: 0 0 3px;
-  color: var(--white);
-  font-weight: 600;
-  font-size: 15.5px;
-}
-
-.mixed-card__desc {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 13px;
-}
-
-.mixed-card .chevron {
-  color: var(--amber);
-  font-size: 22px;
 }
 
 /* ---------- Barra superior del quiz ---------- */
@@ -212,7 +202,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .btn-ghost {
@@ -230,7 +220,7 @@ main {
   width: 100%;
   text-align: center;
   padding: 12px 0;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .score-pill {
@@ -241,6 +231,23 @@ main {
   border: 1px solid var(--border);
   padding: 5px 10px;
   border-radius: 100px;
+}
+
+.progress {
+  height: 5px;
+  background: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--teal);
+  border-radius: 100px;
+  transition: width 0.25s ease;
 }
 
 /* ---------- Tarjeta de pregunta ---------- */
@@ -265,12 +272,7 @@ main {
   padding: 4px 10px;
   border-radius: 100px;
   background: var(--teal-soft);
-  color: var(--teal);
-}
-
-.tag--muted {
-  background: var(--fog);
-  color: var(--ink-soft);
+  color: var(--teal-dark);
 }
 
 .question-card__prompt {
@@ -281,7 +283,53 @@ main {
   color: var(--ink);
 }
 
-/* ---------- Opciones MCQ ---------- */
+/* ---------- Imagen de la pregunta ---------- */
+
+.question-figure {
+  margin: 0 0 18px;
+}
+
+.question-figure__btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.question-figure__btn img {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  background: var(--white);
+}
+
+.question-figure__caption {
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.question-figure__caption:empty {
+  display: none;
+}
+
+.question-figure__error {
+  margin: 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--amber-soft);
+  color: #7A4A0E;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+/* ---------- Opciones ---------- */
 
 .options-list {
   display: flex;
@@ -355,26 +403,6 @@ main {
   opacity: 0.55;
 }
 
-/* ---------- Pregunta abierta ---------- */
-
-.open-answer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-textarea {
-  width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-family: var(--font-ui);
-  font-size: 14.5px;
-  color: var(--ink);
-  background: var(--fog);
-  resize: vertical;
-}
-
 /* ---------- Retroalimentación ---------- */
 
 .feedback {
@@ -395,41 +423,28 @@ textarea {
   border: 1px solid rgba(193, 68, 58, 0.25);
 }
 
-.feedback.is-info {
-  background: var(--amber-soft);
-  border: 1px solid rgba(232, 150, 59, 0.3);
-}
-
 .feedback__verdict {
   margin: 0 0 6px;
   font-weight: 700;
 }
 
+.feedback:not(.is-correct):not(.is-incorrect) .feedback__verdict { color: var(--ink); }
 .feedback.is-correct .feedback__verdict { color: var(--success); }
 .feedback.is-incorrect .feedback__verdict { color: var(--danger); }
-.feedback.is-info .feedback__verdict { color: #9C5F14; }
+
+.feedback__verdict + .feedback__body { margin-top: 0; }
 
 .feedback__body {
   margin: 0;
   color: var(--ink);
 }
 
-.feedback__points {
-  margin: 10px 0 0;
-  padding-left: 18px;
-}
-
-.feedback__points li {
-  margin-bottom: 4px;
-}
-
 /* ---------- Botones ---------- */
 
-.btn-primary {
+.btn-primary,
+.btn-secondary {
+  display: block;
   width: 100%;
-  background: var(--navy);
-  color: var(--white);
-  border: none;
   border-radius: 10px;
   padding: 13px 16px;
   font-size: 15px;
@@ -437,8 +452,25 @@ textarea {
   cursor: pointer;
 }
 
+.btn-primary {
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+}
+
 .btn-primary:active {
   background: var(--navy-deep);
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--navy);
+  border: 1.5px solid var(--border);
+  margin-top: 10px;
+}
+
+.btn-secondary:active {
+  border-color: var(--teal);
 }
 
 .btn-next {
@@ -447,7 +479,15 @@ textarea {
 }
 
 .btn-next:active {
-  background: #0E6F67;
+  background: var(--teal-dark);
+}
+
+.btn-next-session {
+  background: var(--teal);
+}
+
+.btn-next-session:active {
+  background: var(--teal-dark);
 }
 
 /* ---------- Fin de sesión ---------- */
@@ -456,7 +496,7 @@ textarea {
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 32px 24px;
+  padding: 32px 24px 24px;
   text-align: center;
 }
 
@@ -477,6 +517,7 @@ textarea {
 .complete-box__topic {
   margin: 0 0 22px;
   font-size: 13.5px;
+  line-height: 1.4;
   color: var(--ink-soft);
 }
 
@@ -511,7 +552,37 @@ textarea {
   border-radius: 4px;
 }
 
-/* ---------- Pantallas más anchas (tablet/desktop de prueba) ---------- */
+/* ---------- Imagen ampliada ---------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(7, 27, 51, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  cursor: zoom-out;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 82vh;
+  object-fit: contain;
+  background: var(--white);
+  border-radius: 8px;
+}
+
+.lightbox__hint {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------- Pantallas más anchas (tablet/escritorio de prueba) ---------- */
 
 @media (min-width: 540px) {
   #app {

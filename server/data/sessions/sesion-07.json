@@ -1,0 +1,76 @@
+{
+  "title": "Diseño y medición de enlaces FTTH",
+  "description": "Presupuesto óptico, pérdidas por división y reflectometría.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "¿Qué define el presupuesto óptico (power budget) de un enlace?",
+      "options": [
+        {
+          "id": "a",
+          "text": "La diferencia entre la potencia de transmisión y la sensibilidad del receptor, que debe cubrir las pérdidas del enlace"
+        },
+        {
+          "id": "b",
+          "text": "El número de conectores RJ45 del abonado"
+        },
+        {
+          "id": "c",
+          "text": "La frecuencia de reloj del ONT"
+        },
+        {
+          "id": "d",
+          "text": "El protocolo de capa de aplicación utilizado"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "El presupuesto óptico determina cuántas divisiones y qué distancia soporta el enlace: las pérdidas totales deben ser menores que el presupuesto disponible."
+    },
+    {
+      "prompt": "Al pasar de un splitter 1:16 a uno 1:32, ¿cómo cambia aproximadamente la pérdida por división?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Disminuye unos 3 dB"
+        },
+        {
+          "id": "b",
+          "text": "Aumenta unos 3 dB"
+        },
+        {
+          "id": "c",
+          "text": "No cambia, porque el splitter es pasivo"
+        },
+        {
+          "id": "d",
+          "text": "Aumenta unos 30 dB"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Cada duplicación de las salidas añade cerca de 3 dB de pérdida (10·log₁₀2). «Pasivo» significa que no consume energía, no que no tenga pérdidas."
+    },
+    {
+      "prompt": "¿Qué instrumento permite localizar empalmes, conectores y atenuaciones a lo largo de una fibra instalada?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Analizador de espectro de RF"
+        },
+        {
+          "id": "b",
+          "text": "Multímetro digital"
+        },
+        {
+          "id": "c",
+          "text": "OTDR (reflectómetro óptico en el dominio del tiempo)"
+        },
+        {
+          "id": "d",
+          "text": "Generador de funciones"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "El OTDR envía pulsos de luz y analiza la luz retrodispersada y reflejada, mostrando eventos y pérdidas en función de la distancia."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "title": "Redes de acceso ópticas (FTTx y PON)",
+  "description": "Variantes FTTx y arquitectura de las redes ópticas pasivas.",
+  "shuffleQuestions": true,
+  "questions": [
+    {
+      "prompt": "El esquema muestra variantes FTTx según la distancia entre la fibra y el usuario final. ¿Cuál lleva la fibra hasta el interior de la vivienda del abonado?",
+      "image": {
+        "url": "https://commons.wikimedia.org/wiki/Special:FilePath/FTTX.svg?width=600",
+        "alt": "Esquema comparativo de las variantes FTTx (FTTC, FTTB, FTTH) según hasta dónde llega la fibra óptica",
+        "caption": "Esquema FTTx. Fuente: Wikimedia Commons, archivo «FTTX.svg» (la licencia está en la página del archivo)."
+      },
+      "options": [
+        {
+          "id": "a",
+          "text": "FTTC (Fiber to the Curb)"
+        },
+        {
+          "id": "b",
+          "text": "FTTB (Fiber to the Building)"
+        },
+        {
+          "id": "c",
+          "text": "FTTN (Fiber to the Node)"
+        },
+        {
+          "id": "d",
+          "text": "FTTH (Fiber to the Home)"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "FTTH lleva la fibra hasta la vivienda. En FTTC y FTTN la fibra termina en la acera o en un nodo, y el último tramo usa cobre; en FTTB llega hasta el edificio."
+    },
+    {
+      "prompt": "En una red GPON, ¿qué elemento distribuye la señal óptica desde la OLT hacia varias ONU sin necesitar alimentación eléctrica?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Un amplificador óptico EDFA"
+        },
+        {
+          "id": "b",
+          "text": "Un splitter óptico pasivo"
+        },
+        {
+          "id": "c",
+          "text": "Un conmutador Ethernet"
+        },
+        {
+          "id": "d",
+          "text": "Un regenerador 3R"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "El splitter óptico pasivo divide la señal sin alimentación eléctrica, característica central de la arquitectura PON (Passive Optical Network)."
+    },
+    {
+      "prompt": "¿Qué longitud de onda se usa típicamente para el enlace descendente (downstream) en GPON según ITU-T G.984?",
+      "options": [
+        {
+          "id": "a",
+          "text": "850 nm"
+        },
+        {
+          "id": "b",
+          "text": "1310 nm"
+        },
+        {
+          "id": "c",
+          "text": "1490 nm"
+        },
+        {
+          "id": "d",
+          "text": "1625 nm"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "GPON usa 1490 nm en bajada y 1310 nm en subida; 1550 nm suele reservarse para la superposición de video (RF)."
+    }
+  ]
+}

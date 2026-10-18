@@ -10,28 +10,33 @@
  *  - api/index.js        lo exporta tal cual para desplegarlo como
  *                        función serverless en Vercel.
  *
- * Mantener la app en un solo lugar evita mantener dos copias de las
- * rutas para los dos tipos de despliegue.
+ * Contenido editable (sin tocar código):
+ *  - server/data/app.json                    textos del encabezado
+ *  - server/data/sessions/sesion-NN.json     una sesión por archivo
  */
 
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const { loadSessions } = require('./lib/sessions');
 
-const DATA_PATH = path.join(__dirname, 'data', 'questions.json');
+const APP_CONFIG_PATH = path.join(__dirname, 'data', 'app.json');
+
+const DEFAULT_APP_CONFIG = {
+  eyebrow: 'Programa de Telecomunicaciones',
+  title: 'Telecom Q&A',
+  subtitle: 'Elige una sesión de clase y practica con preguntas de opción múltiple.',
+  sessionsLabel: 'Elige una sesión'
+};
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Sirve el cliente web (carpeta public/ en la raíz del proyecto) desde
-// este mismo servidor: abrir la URL del servidor en un navegador ya
-// muestra la app, sin levantar un segundo proceso aparte. En Vercel,
-// esta ruta normalmente ni se ejecuta porque vercel.json sirve public/
-// directamente como sitio estático antes de invocar la función — pero
-// queda como respaldo funcional (p. ej. corriendo `node server/server.js`
-// localmente, o si algún día cambia el enrutamiento de Vercel).
+// este mismo servidor. En Vercel esta ruta normalmente ni se ejecuta
+// porque vercel.json sirve public/ directamente como sitio estático.
 const PUBLIC_PATH = path.join(__dirname, '..', 'public');
 if (fs.existsSync(PUBLIC_PATH)) {
   app.use(express.static(PUBLIC_PATH));
@@ -39,111 +44,112 @@ if (fs.existsSync(PUBLIC_PATH)) {
   app.get('/', (req, res) => {
     res.type('text/plain').send(
       'Telecom Q&A server activo. No se encontró la carpeta public/ ' +
-      'en la raíz del proyecto (se esperaba en ' + PUBLIC_PATH + '), así ' +
-      'que no hay nada que mostrar en la raíz. La API sigue disponible en /api/*.'
+      'en la raíz del proyecto (se esperaba en ' + PUBLIC_PATH + '). ' +
+      'La API sigue disponible en /api/*.'
     );
   });
 }
 
-// --- Carga del banco de preguntas en memoria ---
-// En uso local/intranet, editar data/questions.json y llamar a
-// POST /api/admin/reload (o reiniciar el proceso) recarga el contenido.
-// En Vercel no existe esa posibilidad (sistema de archivos de solo
-// lectura y cada invocación puede correr en una instancia distinta):
-// ahí, actualizar el banco de preguntas significa editar el archivo,
-// hacer commit y volver a desplegar.
-function loadData() {
-  const raw = fs.readFileSync(DATA_PATH, 'utf-8');
-  return JSON.parse(raw);
+// ---------- Carga de contenido ----------
+
+function loadAppConfig() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(APP_CONFIG_PATH, 'utf-8'));
+    const cfg = { ...DEFAULT_APP_CONFIG };
+    for (const key of Object.keys(DEFAULT_APP_CONFIG)) {
+      if (typeof raw[key] === 'string' && raw[key].trim()) cfg[key] = raw[key].trim();
+    }
+    return cfg;
+  } catch (err) {
+    console.warn(`app.json: no se pudo leer (${err.message}); se usan los textos por defecto.`);
+    return { ...DEFAULT_APP_CONFIG };
+  }
 }
 
-let db = loadData();
-
-// Quita del payload los campos que revelarían la respuesta correcta
-function stripAnswer(q) {
-  const { correctOptionId, explanation, referenceAnswer, keyPoints, ...safe } = q;
-  return safe;
+function loadContent() {
+  const { sessions, warnings } = loadSessions();
+  warnings.forEach(w => console.warn(`[sesiones] ${w}`));
+  return { config: loadAppConfig(), sessions, warnings };
 }
 
-// --- Rutas ---
+let content = loadContent();
+
+// Quita del payload lo que revelaría la respuesta correcta
+function publicQuestion(q) {
+  const out = { id: q.id, prompt: q.prompt, options: q.options };
+  if (q.image) out.image = q.image;
+  return out;
+}
+
+function findSession(id) {
+  return content.sessions.find(s => s.id === id);
+}
+
+// ---------- Rutas ----------
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', questionCount: db.questions.length });
+  res.json({
+    status: 'ok',
+    sessionCount: content.sessions.length,
+    warnings: content.warnings.length
+  });
 });
 
-// Lista de temas con el número de preguntas disponibles en cada uno
-app.get('/api/topics', (req, res) => {
-  const counts = db.questions.reduce((acc, q) => {
-    acc[q.topic] = (acc[q.topic] || 0) + 1;
-    return acc;
-  }, {});
-  const topics = db.topics.map(t => ({ ...t, count: counts[t.id] || 0 }));
-  res.json(topics);
+// Textos editables del encabezado (server/data/app.json)
+app.get('/api/config', (req, res) => {
+  res.json(content.config);
 });
 
-// Lista de preguntas filtrable por tema y/o tipo (mcq | open)
-// No incluye la respuesta correcta
-app.get('/api/questions', (req, res) => {
-  const { topic, type } = req.query;
-  let results = db.questions;
-  if (topic) results = results.filter(q => q.topic === topic);
-  if (type) results = results.filter(q => q.type === type);
-  res.json(results.map(stripAnswer));
+// Lista de sesiones (sin preguntas)
+app.get('/api/sessions', (req, res) => {
+  res.json(content.sessions.map(s => ({
+    id: s.id,
+    number: s.number,
+    title: s.title,
+    description: s.description,
+    questionCount: s.questions.length
+  })));
 });
 
-// Una pregunta aleatoria, opcionalmente filtrada por tema y/o tipo
-app.get('/api/questions/random', (req, res) => {
-  const { topic, type } = req.query;
-  let pool = db.questions;
-  if (topic) pool = pool.filter(q => q.topic === topic);
-  if (type) pool = pool.filter(q => q.type === type);
-  if (pool.length === 0) {
-    return res.status(404).json({ error: 'No hay preguntas para ese filtro' });
-  }
-  const pick = pool[Math.floor(Math.random() * pool.length)];
-  res.json(stripAnswer(pick));
+// Una sesión con todas sus preguntas (sin respuestas correctas)
+app.get('/api/sessions/:sessionId', (req, res) => {
+  const s = findSession(req.params.sessionId);
+  if (!s) return res.status(404).json({ error: 'Sesión no encontrada' });
+  res.json({
+    id: s.id,
+    number: s.number,
+    title: s.title,
+    description: s.description,
+    shuffleQuestions: s.shuffleQuestions,
+    questions: s.questions.map(publicQuestion)
+  });
 });
 
-// Verifica una respuesta y devuelve retroalimentación
-// MCQ  -> body: { optionId }
-// Open -> no requiere body; siempre devuelve la respuesta de referencia
-// para autoevaluación del estudiante
-app.post('/api/questions/:id/check', (req, res) => {
-  const q = db.questions.find(q => q.id === req.params.id);
+// Verifica una respuesta. body: { optionId }
+app.post('/api/sessions/:sessionId/questions/:questionId/check', (req, res) => {
+  const s = findSession(req.params.sessionId);
+  if (!s) return res.status(404).json({ error: 'Sesión no encontrada' });
+  const q = s.questions.find(q => q.id === req.params.questionId);
   if (!q) return res.status(404).json({ error: 'Pregunta no encontrada' });
 
-  if (q.type === 'mcq') {
-    const { optionId } = req.body || {};
-    const correct = optionId === q.correctOptionId;
-    return res.json({
-      type: 'mcq',
-      correct,
-      correctOptionId: q.correctOptionId,
-      explanation: q.explanation
-    });
-  }
-
-  if (q.type === 'open') {
-    return res.json({
-      type: 'open',
-      referenceAnswer: q.referenceAnswer,
-      keyPoints: q.keyPoints || []
-    });
-  }
-
-  res.status(400).json({ error: 'Tipo de pregunta desconocido' });
+  const { optionId } = req.body || {};
+  res.json({
+    correct: optionId === q.correctOptionId,
+    correctOptionId: q.correctOptionId,
+    explanation: q.explanation
+  });
 });
 
-// Permite recargar el banco de preguntas sin reiniciar el proceso.
-// Solo tiene efecto real en un despliegue de intranet de larga duración;
-// en Vercel cada invocación puede arrancar desde cero de todos modos.
+// Recarga los archivos sin reiniciar el proceso. Solo tiene efecto real en
+// un despliegue de intranet de larga duración; en Vercel, para cambiar el
+// contenido hay que editar los archivos, hacer commit y volver a desplegar.
 app.post('/api/admin/reload', (req, res) => {
-  try {
-    db = loadData();
-    res.json({ status: 'reloaded', questionCount: db.questions.length });
-  } catch (err) {
-    res.status(500).json({ error: 'No se pudo recargar el archivo de datos', detail: err.message });
-  }
+  content = loadContent();
+  res.json({
+    status: 'reloaded',
+    sessionCount: content.sessions.length,
+    warnings: content.warnings
+  });
 });
 
 module.exports = app;
